@@ -2,47 +2,43 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'usuario'; // Nombre de la tabla
+    protected $primaryKey = 'id_usuario'; // Clave primaria
+    public $timestamps = false; // Sin created_at/updated_at
     protected $fillable = [
-        'name',
-        'email',
+        'nombre',
+        'apellidos',
+        'id_perfil',
+        'superior',
+        'id_sucursal',
+        'correo',
+        'telefono',        
+        'foto',
+        'reportes_adicionales',
         'password',
+        'estatus',
+        'ultima_conexion',
+        'sistema',
+        'app',
+        'nivel',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Indica a Laravel que use 'contraseña' en lugar de 'password'
+    public function getAuthPassword()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->contraseña;
+    }
+
+    // Indica a Laravel que use 'correo' en lugar de 'email'
+    public function getAuthIdentifierName()
+    {
+        return 'correo';
     }
 }

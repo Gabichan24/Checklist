@@ -7,12 +7,14 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@tailwindcss/forms": "^0.5.2",
+        "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.21",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^2.0.0",
         "postcss": "^8.5.6",
-        "tailwindcss": "^3.4.14",
+        "tailwindcss": "^4.1.13",
         "vite": "^7.0.4"
     },
     "name": "checklist-gp",
@@ -23,6 +25,7 @@
         "test": "tests"
     },
     "dependencies": {
+        "alpinejs": "^3.15.0",
         "ansi-regex": "^5.0.1",
         "ansi-styles": "^4.3.0",
         "asynckit": "^0.4.0",
