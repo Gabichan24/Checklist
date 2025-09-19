@@ -33,7 +33,7 @@ class User extends Authenticatable
     // Indica a Laravel que use 'contraseña' en lugar de 'password'
     public function getAuthPassword()
     {
-        return $this->contraseña;
+        return $this->password;
     }
 
     // Indica a Laravel que use 'correo' en lugar de 'email'

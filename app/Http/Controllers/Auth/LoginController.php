@@ -29,7 +29,7 @@ class LoginController extends Controller
         // Intenta autenticar
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->route('dashboard');
         }
 
         // Si falla, regresa con error
