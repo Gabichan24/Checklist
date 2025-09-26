@@ -8,11 +8,11 @@ class AreasController extends Controller
 {
     public function index()
     {
-        return view('regiones.index');
+        return view('areas.index');
     }
 
     public function create()
     {
-        return view('regiones.create');
+        return view('areas.create');
     }
 }

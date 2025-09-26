@@ -4,13 +4,16 @@
 
 @section('table-actions')
     <div class="flex space-x-2">
-        <button class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">
-            Crear Categoría
-        </button>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+        <button 
+        x-on:click="openModal = true"
+        class="bg-blue-500 hover:bg-blue-600 text-gray px-4 py-2 rounded-lg"
+    >
+        Crear
+    </button>
+        <button class="bg-blue-600 text-gray px-4 py-2 rounded-lg shadow hover:bg-blue-700">
             Descargar XLSX
         </button>
-        <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+        <button class="bg-indigo-600 text-gray px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
             Descargar CSV
         </button>
     </div>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="max-w-xl mx-auto bg-white shadow rounded-lg p-6">
         <!-- Título y botón -->
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-bold text-gray-700">@yield('table-title')</h2>

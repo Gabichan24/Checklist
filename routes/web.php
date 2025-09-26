@@ -1,7 +1,7 @@
-// routes/web.php
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\PerfilesController;
@@ -11,6 +11,16 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\LogrosController;
+
+
+// Ruta para mostrar el formulario de login
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+
+// Ruta para procesar el login
+Route::post('/login', [LoginController::class, 'login']);
+
+// Ruta para cerrar sesión
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
     return view('dashboard');
@@ -29,6 +39,7 @@ Route::get('/regiones/create', [RegionesController::class, 'create'])->name('reg
 Route::get('/zonas', [ZonasController::class, 'index'])->name('zonas.index');
 Route::get('/zonas/create', [ZonasController::class, 'create'])->name('zonas.create');
 Route::get('/areas', [AreasController::class, 'index'])->name('areas.index');
+Route::get('/areas/create', [AreasController::class, 'create'])->name('areas.create');
 Route::get('/categorias', [CategoriasController::class, 'index'])->name('categorias.index');
 Route::get('/sucursales', [SucursalesController::class, 'index'])->name('sucursales.index');
 

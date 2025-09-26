@@ -1,7 +1,7 @@
 @extends('layouts.table') {{-- usar la plantilla tablet.blade.php --}}
 
 @section('content')
-<div class="bg-white shadow rounded-lg p-6">
+<div class="max-w-xl mx-auto bg-white shadow rounded-lg p-6">
 
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-4">
@@ -13,19 +13,17 @@
     </div>
 
     <!-- Acciones superiores (Exportar, Buscar) -->
-    <div class="flex justify-between mb-3">
-        <div class="flex gap-2">
-            <!-- Exportar XLSX -->
-            <a href="{{ route('areas.export', 'xlsx') }}" 
-               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">
-               XLSX
-            </a>
-            <!-- Exportar CSV -->
-            <a href="{{ route('areas.export', 'csv') }}" 
-               class="bg-blue-400 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
-               CSV
-            </a>
-        </div>
+<div class="flex justify-between mb-3">
+    <div class="flex gap-2">
+        <!-- Botón Exportar Excel (temporal) -->
+        <button class="bg-blue-500 hover:bg-blue-600 text-gray px-3 py-2 rounded-lg text-sm cursor-not-allowed opacity-50">
+           XLSX
+        </button>
+        <!-- Botón Exportar CSV (temporal) -->
+        <button class="bg-blue-400 hover:bg-blue-500 text-gray px-3 py-2 rounded-lg text-sm cursor-not-allowed opacity-50">
+           CSV
+        </button>
+    </div>
 
         <!-- Buscar -->
         <div>

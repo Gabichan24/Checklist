@@ -8,11 +8,11 @@ class CategoriasController extends Controller
 {
     public function index()
     {
-        return view('regiones.index');
+        return view('categorias.index');
     }
 
     public function create()
     {
-        return view('regiones.create');
+        return view('categorias.create');
     }
 }
