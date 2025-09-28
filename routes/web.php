@@ -36,6 +36,7 @@ Route::get('/perfiles', [PerfilesController::class, 'index'])->name('perfiles.in
 // Estructura
 Route::get('/regiones', [RegionesController::class, 'index'])->name('regiones.index');
 Route::get('/regiones/create', [RegionesController::class, 'create'])->name('regiones.create');
+Route::post('/regiones', [RegionesController::class, 'store'])->name('regiones.store');
 Route::get('/zonas', [ZonasController::class, 'index'])->name('zonas.index');
 Route::get('/zonas/create', [ZonasController::class, 'create'])->name('zonas.create');
 Route::get('/areas', [AreasController::class, 'index'])->name('areas.index');

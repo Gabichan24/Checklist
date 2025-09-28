@@ -2,58 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Region;
 use Illuminate\Http\Request;
 
 class RegionesController extends Controller
 {
     public function index()
     {
-        $regiones = [
-            ['id' => 1, 'nombre' => 'Aguascalientes'],
-    ['id' => 2, 'nombre' => 'Baja California'],
-    ['id' => 3, 'nombre' => 'Baja California Sur'],
-    ['id' => 4, 'nombre' => 'Campeche'],
-    ['id' => 5, 'nombre' => 'Chiapas'],
-    ['id' => 6, 'nombre' => 'Chihuahua'],
-    ['id' => 7, 'nombre' => 'Ciudad de México'],
-    ['id' => 8, 'nombre' => 'Coahuila'],
-    ['id' => 9, 'nombre' => 'Colima'],
-    ['id' => 10, 'nombre' => 'Durango'],
-    ['id' => 11, 'nombre' => 'Estado de México'],
-    ['id' => 12, 'nombre' => 'Guanajuato'],
-    ['id' => 13, 'nombre' => 'Guerrero'],
-    ['id' => 14, 'nombre' => 'Hidalgo'],
-    ['id' => 15, 'nombre' => 'Jalisco'],
-    ['id' => 16, 'nombre' => 'Michoacán'],
-    ['id' => 17, 'nombre' => 'Morelos'],
-    ['id' => 18, 'nombre' => 'Nayarit'],
-    ['id' => 19, 'nombre' => 'Nuevo León'],
-    ['id' => 20, 'nombre' => 'Oaxaca'],
-    ['id' => 21, 'nombre' => 'Puebla'],
-    ['id' => 22, 'nombre' => 'Querétaro'],
-    ['id' => 23, 'nombre' => 'Quintana Roo'],
-    ['id' => 24, 'nombre' => 'San Luis Potosí'],
-    ['id' => 25, 'nombre' => 'Sinaloa'],
-    ['id' => 26, 'nombre' => 'Sonora'],
-    ['id' => 27, 'nombre' => 'Tabasco'],
-    ['id' => 28, 'nombre' => 'Tamaulipas'],
-    ['id' => 29, 'nombre' => 'Tlaxcala'],
-    ['id' => 30, 'nombre' => 'Veracruz'],
-    ['id' => 31, 'nombre' => 'Yucatán'],
-    ['id' => 32, 'nombre' => 'Zacatecas'],
-        ];
+        $regiones = Region::all();
+
+        // Si no hay datos en la BD, usar datos iniciales
+        if ($regiones->isEmpty()) {
+            $regiones = collect([
+                ['id' => 1, 'nombre' => 'Aguascalientes', 'estados' => 'Aguascalientes', 'estatus' => 'Activo'],
+                ['id' => 2, 'nombre' => 'Baja California', 'estados' => 'Baja California', 'estatus' => 'Activo'],
+                ['id' => 3, 'nombre' => 'Baja California Sur', 'estados' => 'Baja California Sur', 'estatus' => 'Activo'],
+                ['id' => 4, 'nombre' => 'Campeche', 'estados' => 'Campeche', 'estatus' => 'Activo'],
+                // ... Agrega todos los demás estados si quieres
+            ])->map(fn($item) => (object)$item); // <- convertir a objetos
+        }
 
         return view('regiones.index', compact('regiones'));
     }
 
-    public function create()
-    {
-        return view('regiones.create'); 
-    }
-
     public function store(Request $request)
     {
-        return redirect()->route('regiones.create')->with('success', 'Región “guardada” correctamente');
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'estados' => 'required|string|max:255',
+        ]);
+
+        Region::create([
+            'nombre' => $request->nombre,
+            'estados' => $request->estados,
+            'estatus' => 'Activo',
+        ]);
+
+        return redirect()->route('regiones.index')->with('success', 'Región guardada correctamente');
     }
 }
-
