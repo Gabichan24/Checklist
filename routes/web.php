@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Exports\RegionesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UsuariosController;
@@ -11,7 +13,6 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\LogrosController;
-
 
 // Ruta para mostrar el formulario de login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -46,3 +47,8 @@ Route::get('/sucursales', [SucursalesController::class, 'index'])->name('sucursa
 
 // Logros
 Route::get('/logros', [LogrosController::class, 'index'])->name('logros.index');
+
+//xsls
+Route::get('/regiones/export/xlsx', [RegionesController::class, 'exportXlsx'])->name('regiones.export.xlsx');
+
+Route::get('/regiones/export/csv', [RegionesController::class, 'exportCsv'])->name('regiones.export.csv');
