@@ -1,7 +1,14 @@
 @extends('layouts.table')
 
 @section('content')
-<div x-data="{ open: false }" class="max-w-xl mx-auto bg-white shadow rounded-lg p-6">
+<div x-data="{ 
+        open: false, 
+        openModal: false, 
+        regionId: null, 
+        descripcion: '', 
+        estadoId: '' 
+    }" 
+    class="max-w-xl mx-auto bg-white shadow rounded-lg p-6">
 
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-4">
@@ -15,14 +22,12 @@
     <div class="flex justify-between mb-4">
         <div class="flex gap-2">
             <button onclick="window.location='{{ route('regiones.export.xlsx') }}'" class="bg-blue-500 hover:bg-blue-600 text-gray px-3 py-2 rounded-lg text-sm">
-    XLSX
-</button>
-
-<button onclick="window.location='{{ route('regiones.export.csv') }}'" class="bg-blue-400 hover:bg-blue-500 text-gray px-3 py-2 rounded-lg text-sm">
-    CSV
-</button>
+                XLSX
+            </button>
+            <button onclick="window.location='{{ route('regiones.export.csv') }}'" class="bg-blue-400 hover:bg-blue-500 text-gray px-3 py-2 rounded-lg text-sm">
+                CSV
+            </button>
         </div>
-        <!-- (Aquí puedes agregar un buscador en el futuro) -->
     </div>
 
     <!-- Tabla -->
@@ -40,26 +45,32 @@
             <tbody>
                 @forelse($regiones as $region)
                     <tr class="text-center">
-                        <!-- Número consecutivo -->
                         <td class="px-4 py-2 border">{{ $region->id_region }}</td>
-
-                        <!-- Nombre -->
                         <td class="px-4 py-2 border">{{ $region->nombre }}</td>
-
-                        <!-- Estado -->
                         <td class="px-4 py-2 border">{{ $region->estados }}</td>
-
-                        <!-- Estatus -->
                         <td class="px-4 py-2 border">
-                            <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
-                                {{ $region->estatus ?? 'Activo' }}
+                            <span class="{{ $region->estatus == 'Activo' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }} px-2 py-1 rounded-full text-xs">
+                                {{ $region->estatus }}
                             </span>
                         </td>
-
-                        <!-- Acciones -->
                         <td class="px-4 py-2 border flex justify-center gap-2">
-                            <a href="#" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded">✏️</a>
-                            <a href="#" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">🔒</a>
+                            <!-- Botón Editar -->
+<button 
+    @click="openModal = true; regionId={{ $region->id_region }}; descripcion='{{ $region->nombre }}'; estado='{{ $region->estados }}'"
+    class="bg-purple-600 text-gray px-4 py-2 rounded-lg hover:bg-purple-700"
+    {{ $region->estatus == 'Inactivo' ? 'disabled opacity-50 cursor-not-allowed' : '' }}>
+    ✏️
+</button>
+
+<!-- Botón Bloquear/Desbloquear -->
+<form action="{{ route('regiones.toggle', $region->id_region) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <button type="submit" 
+        class="{{ $region->estatus == 'Activo' ? 'bg-gray-400 hover:bg-gray-500' : 'bg-yellow-400 hover:bg-yellow-500' }} text-white px-3 py-1 rounded">
+        {{ $region->estatus == 'Activo' ? '🔓' : '🔒' }}
+    </button>
+                            </form>
                         </td>
                     </tr>
                 @empty
@@ -71,8 +82,52 @@
         </table>
     </div>
 
+    <!-- Modal Editar Región -->
+    <div x-show="openModal" 
+         class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50"
+         x-cloak>
+        <div class="bg-white rounded-lg shadow-lg w-1/3 p-6">
+            <h2 class="text-xl font-semibold mb-4">Editar Región</h2>
+           
+            <form method="POST" :action="'/regiones/' + regionId">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Descripción</label>
+                    <input type="text" name="descripcion" x-model="descripcion"
+                        class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Estado</label>
+                    <select name="estado" x-model="estado" class="w-full border rounded px-3 py-2" required>
+                        <option value="">-- Selecciona --</option>
+                        @foreach($estados as $estado)
+                            <option value="{{ $estado->nombre }}">{{ $estado->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" 
+                            @click="openModal = false" 
+                            class="bg-gray-400 hover:bg-gray-500 text-gray px-4 py-2 rounded-lg">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-gray px-4 py-2 rounded-lg">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Crear Región -->
-    <div x-show="open" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div x-show="open" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+         x-cloak>
         <div class="bg-white rounded-lg p-6 w-96 relative">
             <h3 class="text-lg font-bold mb-4">Crear Región</h3>
             <form action="{{ route('regiones.store') }}" method="POST">
@@ -97,7 +152,5 @@
             </form>
         </div>
     </div>
-
 </div>
 @endsection
-

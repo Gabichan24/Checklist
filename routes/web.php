@@ -38,6 +38,8 @@ Route::get('/perfiles', [PerfilesController::class, 'index'])->name('perfiles.in
 Route::get('/regiones', [RegionesController::class, 'index'])->name('regiones.index');
 Route::get('/regiones/create', [RegionesController::class, 'create'])->name('regiones.create');
 Route::post('/regiones', [RegionesController::class, 'store'])->name('regiones.store');
+Route::put('regiones/{id}', [RegionesController::class, 'update'])->name('regiones.update');
+Route::put('/regiones/{id}/toggle', [RegionesController::class, 'toggleEstatus'])->name('regiones.toggle');
 Route::get('/zonas', [ZonasController::class, 'index'])->name('zonas.index');
 Route::get('/zonas/create', [ZonasController::class, 'create'])->name('zonas.create');
 Route::get('/areas', [AreasController::class, 'index'])->name('areas.index');
