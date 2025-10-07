@@ -8,7 +8,7 @@ export default {
         './resources/**/*.js',
         './resources/**/*.vue',
     ],
-    darkMode: 'class', // Habilita modo oscuro basado en clase 'dark'
+    darkMode: 'class', // ✅ Habilita modo oscuro basado en clase 'dark'
     theme: {
         extend: {
             fontFamily: {
@@ -21,6 +21,5 @@ export default {
             },
         },
     },
-
     plugins: [forms],
 }

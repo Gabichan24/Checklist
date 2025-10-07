@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', '')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
 </head>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-<body class="h-screen flex overflow-hidden">
+<body class="h-full flex">
 
     <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 h-full w-64 bg-white border-r shadow-lg z-40 flex flex-col">
+    <aside class="w-64 fixed h-full bg-white border-r shadow-lg">
         <!-- Logo -->
         <div class="p-6 border-b flex items-center gap-2">
             <img src="{{ asset('images/GP.png') }}" alt="Logo" class="w-10 h-10 rounded-lg">
@@ -26,24 +25,18 @@
             <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">📊 Reportes</a>
         </nav>
 
-        <!-- Línea divisoria al final de la sidebar -->
-        <div class="border-t border-gray-200 mx-4"></div>
-        
         <!-- Configuración abajo -->
-        <div class="p-4">
+        <div class="p-4 border-t">
             <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 w-full">⚙️ Configuraciones</a>
         </div>
     </aside>
 
-    <!-- Contenedor principal (margen a la derecha de la sidebar) -->
-    <div class="flex-1 flex flex-col ml-64">
-
-        <!-- Navbar (sin línea divisoria) -->
-        <header class="h-16 bg-white flex items-center justify-between px-6 shadow-sm">
-            <!-- Título -->
+    <!-- Contenedor principal -->
+    <div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+        
+        <!-- Navbar -->
+        <header class="h-16 bg-white flex items-center justify-between px-6 shadow-sm flex-shrink-0">
             <h1 class="text-lg font-semibold text-gray-700">@yield('page-title', '')</h1>
-
-            <!-- Menú derecho -->
             <div class="flex items-center gap-3">
                 <button class="hover:bg-gray-100 p-2 rounded-lg">🔔</button>
                 <button class="hover:bg-gray-100 p-2 rounded-lg">💬</button>
@@ -55,10 +48,9 @@
             </div>
         </header>
 
-        <!-- Contenido dinámico -->
-        <main class="flex-1 p-6 bg-gray-50 mt-16">
-                @yield('content')
-        </main>
+        <main class="flex-1 max-w-5xl mx-auto bg-white shadow rounded-lg p-6 mt-16">
+    @yield('content')
+</main>
     </div>
 </body>
 </html>

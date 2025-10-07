@@ -2,48 +2,83 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Zona;
+use App\Models\Region;
 use Illuminate\Http\Request;
+use App\Exports\ZonasExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ZonasController extends Controller
 {
+    // Mostrar listado de zonas
     public function index()
-    {
-        // Lista de regiones (puede ser la misma que usaste en RegionesController)
-        $regiones = [
-            ['id' => 1, 'nombre' => 'Aguascalientes'],
-            ['id' => 2, 'nombre' => 'Baja California'],
-            ['id' => 3, 'nombre' => 'Baja California Sur'],
-            ['id' => 4, 'nombre' => 'Campeche'],
-            ['id' => 5, 'nombre' => 'Chiapas'],
-            ['id' => 6, 'nombre' => 'Chihuahua'],
-            ['id' => 7, 'nombre' => 'Ciudad de México'],
-            ['id' => 8, 'nombre' => 'Coahuila'],
-            ['id' => 9, 'nombre' => 'Colima'],
-            ['id' => 10, 'nombre' => 'Durango'],
-            ['id' => 11, 'nombre' => 'Estado de México'],
-            ['id' => 12, 'nombre' => 'Guanajuato'],
-            ['id' => 13, 'nombre' => 'Guerrero'],
-            ['id' => 14, 'nombre' => 'Hidalgo'],
-            ['id' => 15, 'nombre' => 'Jalisco'],
-            ['id' => 16, 'nombre' => 'Michoacán'],
-            ['id' => 17, 'nombre' => 'Morelos'],
-            ['id' => 18, 'nombre' => 'Nayarit'],
-            ['id' => 19, 'nombre' => 'Nuevo León'],
-            ['id' => 20, 'nombre' => 'Oaxaca'],
-            ['id' => 21, 'nombre' => 'Puebla'],
-            ['id' => 22, 'nombre' => 'Querétaro'],
-            ['id' => 23, 'nombre' => 'Quintana Roo'],
-            ['id' => 24, 'nombre' => 'San Luis Potosí'],
-            ['id' => 25, 'nombre' => 'Sinaloa'],
-            ['id' => 26, 'nombre' => 'Sonora'],
-            ['id' => 27, 'nombre' => 'Tabasco'],
-            ['id' => 28, 'nombre' => 'Tamaulipas'],
-            ['id' => 29, 'nombre' => 'Tlaxcala'],
-            ['id' => 30, 'nombre' => 'Veracruz'],
-            ['id' => 31, 'nombre' => 'Yucatán'],
-            ['id' => 32, 'nombre' => 'Zacatecas'],
-        ];
+{
+    $zonas = Zona::select('zona.id_zona', 'zona.nombre', 'zona.estatus', 'region.nombre as region_nombre')
+                 ->leftJoin('region', 'zona.id_region', '=', 'region.id_region')
+                 ->get();
+    $regiones = Region::all(); // Para selects o filtros
+    return view('zonas.index', compact('zonas', 'regiones'));
+}
+    
 
-        return view('zonas.index', compact('regiones'));
+    // Guardar nueva zona
+    public function store(Request $request)
+{
+    Zona::create([
+        'nombre' => $request->nombre,
+        'id_region' => $request->id_region,
+        'estatus' => 'Activo', // por defecto nueva zona Activo
+    ]);
+
+    return redirect()->route('zonas.index')->with('success', 'Zona creada correctamente.');
+}
+public function create()
+{
+    $regiones = Region::all(); // Para llenar el select
+    return view('zonas.create', compact('regiones'));
+}
+    // Mostrar formulario para editar zona (opcional, si usas modal solo index)
+    public function edit(Zona $zona)
+    {
+        $regiones = Region::all();
+        return view('zonas.edit', compact('zona', 'regiones'));
+    }
+
+    // Actualizar zona
+    public function update(Request $request, Zona $zona)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'id_region' => 'required|exists:region,id_region',
+    ]);
+
+    $zona->update([
+        'nombre' => $request->nombre,
+        'id_region' => $request->id_region,
+        'estatus' => $request->estatus ?? $zona->estatus, // Mantener texto
+    ]);
+
+    return redirect()->route('zonas.index')->with('success', 'Zona actualizada correctamente.');
+}
+
+    // Cambiar estatus (Activo/Inactivo)
+   public function toggle($id)
+{
+    $zona = Zona::findOrFail($id); // busca la zona existente
+    $zona->estatus = $zona->estatus === 'Activo' ? 'Inactivo' : 'Activo';
+    $zona->save();
+
+    return redirect()->route('zonas.index')->with('success', 'Estatus actualizado correctamente.');
+}
+    // Exportar zonas
+    public function exportXlsx()
+    {
+        return Excel::download(new ZonasExport, 'zonas.xlsx');
+    }
+
+    public function exportCsv()
+    {
+        return Excel::download(new ZonasExport, 'zonas.csv');
     }
 }
+

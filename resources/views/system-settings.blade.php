@@ -16,6 +16,7 @@
     </div>
 
     <script>
+        <body x-cloak x-data="{darkMode: $persist(false)}" :class="{'dark': darkMode === true }" class="antialiased"> body>
         document.addEventListener('DOMContentLoaded', () => {
             const darkModeToggle = document.querySelector('#dark-mode-toggle');
             if (darkModeToggle) {

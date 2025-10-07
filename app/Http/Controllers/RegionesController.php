@@ -9,10 +9,16 @@ use App\Exports\RegionesExport;
 
 class RegionesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Traer todas las regiones que ya existen
-        $regiones = Region::all();
+        // Obtener el valor del buscador
+        $search = $request->input('search');
+
+        // Si hay búsqueda, filtrar; si no, traer todas
+         $regiones = Region::when($search, function ($query, $search) {
+        $query->where('nombre', 'like', "%{$search}%")
+              ->orWhere('estados', 'like', "%{$search}%");
+    })->get();
 
         // Lista fija de estados
         $estados = [
@@ -50,7 +56,7 @@ class RegionesController extends Controller
             (object)['nombre' => 'Zacatecas'],
         ];
 
-        return view('regiones.index', compact('regiones', 'estados'));
+        return view('regiones.index', compact('regiones', 'estados', 'search'));
     }
 
     public function update(Request $request, $id)
@@ -68,15 +74,14 @@ class RegionesController extends Controller
 
         return redirect()->route('regiones.index')->with('success', 'Región actualizada correctamente.');
     }
-public function toggleEstatus($id)
+
+    public function toggle($id)
 {
     $region = Region::findOrFail($id);
-
-    // Cambiar estatus
     $region->estatus = $region->estatus === 'Activo' ? 'Inactivo' : 'Activo';
     $region->save();
 
-    return redirect()->route('regiones.index')->with('success', 'Estatus actualizado.');
+    return redirect()->back();
 }
     public function exportXlsx()
     {
@@ -88,4 +93,3 @@ public function toggleEstatus($id)
         return Excel::download(new RegionesExport, 'regiones.csv');
     }
 }
-
