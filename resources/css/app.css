@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "tom-select/dist/css/tom-select.css";
 /* Importar fuentes opcionales */
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&display=swap');
 [x-cloak] { display: none !important; } /*<-- This Line right here!*/

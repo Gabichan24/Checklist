@@ -6,6 +6,7 @@ use App\Exports\RegionesExport;
 use App\Exports\ZonasExport;
 use App\Exports\AreasExport;
 use App\Exports\CategoriasExport;
+use App\Exports\SucursalesExport;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UsuariosController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\LogrosController;
+
 
 
 // Ruta para mostrar el formulario de login
@@ -69,13 +71,67 @@ Route::post('/categorias', [CategoriasController::class, 'store'])->name('catego
 Route::get('/categorias/{id}/edit', [CategoriasController::class, 'edit'])->name('categorias.edit');
 Route::put('/categorias/{id}', [CategoriasController::class, 'update'])->name('categorias.update');
 Route::put('/categorias/toggle/{id}', [CategoriasController::class, 'toggle'])->name('categorias.toggle');
-
-// ✅ Exportaciones
 Route::get('/categorias/export/xlsx', [CategoriasController::class, 'exportXlsx'])->name('categorias.export.xlsx');
 Route::get('/categorias/export/csv', [CategoriasController::class, 'exportCsv'])->name('categorias.export.csv');
 
-
+Route::resource('sucursales', SucursalesController::class);
 Route::get('/sucursales', [SucursalesController::class, 'index'])->name('sucursales.index');
+Route::get('/sucursales/create', [SucursalesController::class, 'create'])->name('sucursales.create');
+Route::get('/sucursales/{id}/edit', [SucursalesController::class, 'edit'])->name('sucursales.edit');
+Route::put('/sucursales/{id}', [SucursalesController::class, 'update'])->name('sucursales.update');
+Route::put('/sucursales/toggle/{id}', [SucursalesController::class, 'toggle'])->name('sucursales.toggle');
+Route::get('/sucursales/export/xlsx', [SucursalesController::class, 'exportXlsx'])->name('sucursales.export.xlsx');
+Route::get('/sucursales/export/csv', [SucursalesController::class, 'exportCsv'])->name('sucursales.export.csv');
+Route::post('/sucursales', [SucursalesController::class, 'store'])->name('sucursales.store');
+Route::put('/sucursales/{id}', [SucursalesController::class, 'update'])->name('sucursales.update');
 
+Route::prefix('usuarios')->group(function () {
+
+    // Listado de usuarios
+    Route::get('/', [UsuariosController::class, 'index'])->name('usuarios.index');
+
+    // Exportar (opcional)
+    Route::get('/export/xlsx', [UsuariosController::class, 'exportXlsx'])->name('usuarios.export.xlsx');
+    Route::get('/export/csv', [UsuariosController::class, 'exportCsv'])->name('usuarios.export.csv');
+
+    // Crear usuario
+    Route::get('/create', [UsuariosController::class, 'create'])->name('usuarios.create');
+    Route::post('/store', [UsuariosController::class, 'store'])->name('usuarios.store');
+
+    // Editar usuario
+    Route::get('/{id_usuario}/edit', [UsuariosController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/{id_usuario}', [UsuariosController::class, 'update'])->name('usuarios.update');
+
+    // Eliminar usuario
+    Route::delete('/{id_usuario}', [UsuariosController::class, 'destroy'])->name('usuarios.destroy');
+    Route::get('/api/perfiles', [PerfilesController::class, 'listar'])
+    ->name('api.perfiles');
+    // Vacaciones de usuarios
+    Route::get('/{id}/vacaciones', [UsuariosController::class, 'vacaciones'])->name('usuarios.vacaciones'); // GET vacaciones
+    Route::post('/vacaciones/guardar', [UsuariosController::class, 'guardarVacacion'])->name('usuarios.vacaciones.guardar'); // POST guardar
+    Route::put('/vacaciones/{id}', [UsuariosController::class, 'actualizarVacacion'])->name('usuarios.vacaciones.actualizar'); // PUT actualizar
+    Route::delete('/vacaciones/{id}', [UsuariosController::class, 'destroyVacacion'])->name('usuarios.vacaciones.destroy');
+    Route::patch('/vacaciones/{id}/toggle', [UsuariosController::class, 'toggleFinalizada'])->name('usuarios.vacaciones.toggle'); // PATCH toggle
+    
+    // Activar / Desactivar usuario (estatus)
+    Route::put('/toggle/{id_perfiles}', [PerfilesController::class, 'toggle'])->name('perfiles.toggle');
+});
+
+  Route::post('/store', [UsuariosController::class, 'store'])->name('usuarios.store');
 // Logros
 Route::get('/logros', [LogrosController::class, 'index'])->name('logros.index');
+
+
+// RUTAS PERFIL
+Route::resource('perfiles', PerfilesController::class)->except(['show']);
+Route::prefix('perfiles')->group(function() {
+    Route::get('perfiles', [PerfilesController::class, 'index'])->name('perfiles.index');
+    Route::post('perfiles', [PerfilesController::class, 'store'])->name('perfiles.store');
+    Route::get('perfiles/{id}/edit', [PerfilesController::class, 'edit'])->name('perfiles.edit');
+    Route::put('perfiles/{id}', [PerfilesController::class, 'update'])->name('perfiles.update');
+    Route::delete('perfiles/{id}', [PerfilesController::class, 'destroy'])->name('perfiles.destroy');
+
+    // Permisos
+    Route::get('/{id}/permisos', [PerfilesController::class, 'permisos'])->name('perfiles.permisos');
+    Route::post('/{id}/permisos', [PerfilesController::class, 'guardarPermisos'])->name('perfiles.guardarPermisos');
+});

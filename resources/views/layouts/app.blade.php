@@ -6,7 +6,11 @@
     <title>@yield('title', '')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.default.min.css" rel="stylesheet">
+
+
 <body class="h-full flex">
 
     <!-- Sidebar -->
@@ -50,6 +54,7 @@
 
         <main class="flex-1 max-w-5xl mx-auto bg-white shadow rounded-lg p-6 mt-16">
     @yield('content')
+    @stack('scripts')
 </main>
     </div>
 </body>
