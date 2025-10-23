@@ -87,17 +87,13 @@
         </template>
     </div>
 
-            
-
-    {{-- MODAL CREAR/EDITAR USUARIO --}}
+{{-- MODAL CREAR/EDITAR USUARIO --}}
 <div x-show="modalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4" x-cloak>
     <div class="bg-white rounded-lg p-6 w-full max-w-xl max-h-[85vh] overflow-y-auto">
         <h3 class="text-lg font-bold mb-4 text-center" x-text="usuarioId === null ? 'Crear Usuario' : 'Editar Usuario'"></h3>
 
-        <form :action="usuarioId === null ? '{{ route('usuarios.store') }}' : '/usuarios/' + usuarioId" method="POST" enctype="multipart/form-data">
-            @csrf
-            <template x-if="usuarioId !== null">@method('PUT')</template>
-
+        <!-- Usamos @submit.prevent para evitar el submit normal -->
+        <form @submit.prevent="guardarUsuario" enctype="multipart/form-data">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {{-- FOTO --}}
                 <div class="sm:col-span-2 flex justify-center mb-4">
@@ -105,17 +101,17 @@
                         <template x-if="foto">
                             <img :src="foto" class="w-24 h-24 rounded-full object-cover border mb-2">
                         </template>
-                        <input type="file" name="foto" @change="foto = URL.createObjectURL($event.target.files[0])" class="text-sm w-full">
+                        <input type="file" @change="seleccionarFoto($event)" class="text-sm w-full">
                     </div>
                 </div>
 
                 {{-- NOMBRE / APELLIDO --}}
-                <div class="w-full"><label>Nombre</label><input type="text" name="nombre" x-model="nombre" class="w-full border rounded px-2 py-1 text-sm" required></div>
-                <div class="w-full"><label>Apellido</label><input type="text" name="apellidos" x-model="apellidos" class="w-full border rounded px-2 py-1 text-sm" required></div>
+                <div class="w-full"><label>Nombre</label><input type="text" x-model="nombre" class="w-full border rounded px-2 py-1 text-sm" required></div>
+                <div class="w-full"><label>Apellido</label><input type="text" x-model="apellidos" class="w-full border rounded px-2 py-1 text-sm" required></div>
 
                 {{-- PERFIL / SUPERIOR --}}
                 <div class="w-full"><label>Perfil</label>
-                    <select name="id_perfil" x-model="id_perfil" class="w-full border rounded px-2 py-1 text-sm" required>
+                    <select x-model="id_perfil" class="w-full border rounded px-2 py-1 text-sm" required>
                         <option value="">-- Selecciona --</option>
                         @foreach($perfiles as $perfil)
                             <option value="{{ $perfil->id_perfil }}">{{ $perfil->nombre_perfil }}</option>
@@ -123,7 +119,7 @@
                     </select>
                 </div>
                 <div class="w-full"><label>Superior</label>
-                    <select name="superior" x-model="superior" class="w-full border rounded px-2 py-1 text-sm">
+                    <select x-model="superior" class="w-full border rounded px-2 py-1 text-sm">
                         <option value="">-- Selecciona --</option>
                         @foreach($usuarios as $u)
                             <option :selected="superior == '{{ $u->id_usuario }}'" value="{{ $u->id_usuario }}">{{ $u->nombre }} {{ $u->apellidos }}</option>
@@ -131,23 +127,25 @@
                     </select>
                 </div>
 
-                {{-- SUCURSAL (solo al editar) --}}
+                {{-- SUCURSAL --}}
                 <div class="w-full">
                     <label>Sucursal</label>
-                    <select name="id_sucursal" x-model="id_sucursal" class="w-full border rounded px-2 py-1 text-sm">
+                    <select x-model="id_sucursal" class="w-full border rounded px-2 py-1 text-sm">
                         <option value="">--Selecciona una sucursal--</option>
                         @foreach($sucursales as $sucursal)
-                            <option value="{{ $sucursal->id }}" :selected="id_sucursal == {{ $sucursal->id }}">{{ $sucursal->nombre }}</option>
+                            <option value="{{ $sucursal->id_sucursal }}" :selected="id_sucursal == {{ $sucursal->id_sucursal }}">
+                                {{ $sucursal->nombre }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
 
                 {{-- CORREO --}}
-                <div class="sm:col-span-2 w-full"><label>Correo</label><input type="email" name="correo" x-model="correo" class="w-full border rounded px-2 py-1 text-sm" required></div>
+                <div class="sm:col-span-2 w-full"><label>Correo</label><input type="email" x-model="correo" class="w-full border rounded px-2 py-1 text-sm" required></div>
 
                 {{-- CÓDIGO PAÍS / TELÉFONO --}}
                 <div class="w-full"><label>Código de país</label>
-                    <select name="codigo_pais" x-model="codigo_pais" class="w-full border rounded px-2 py-1 text-sm">
+                     <select name="codigo_pais" x-model="codigo_pais" class="w-full border rounded px-2 py-1 text-sm">
                         <option value="">-- Selecciona --</option>
                         <option value="+1">(EU,DO,PR) +1</option>
                         <option value="+51">Perú (+51)</option>
@@ -170,35 +168,35 @@
                         <option value="+502">Guatemala (+502)</option>
                     </select>
                 </div>
-                <div class="w-full"><label>Teléfono</label><input type="text" name="telefono" x-model="telefono" class="w-full border rounded px-2 py-1 text-sm"></div>
+                <div class="w-full"><label>Teléfono</label><input type="text" x-model="telefono" class="w-full border rounded px-2 py-1 text-sm"></div>
 
                 {{-- CHECKBOXES --}}
                 <div class="sm:col-span-2 flex flex-wrap gap-4">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="reportes_adicionales" id="reportes_adicionales" x-model="reportes_adicionales" class="h-4 w-4">
-                        <label for="reportes_adicionales" class="text-sm">Recibe Reportes Adicionales</label>
+                        <input type="checkbox" x-model="reportes_adicionales" class="h-4 w-4">
+                        <label class="text-sm">Recibe Reportes Adicionales</label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="email_personal" id="email_personal" x-model="email_personal" class="h-4 w-4">
-                        <label for="email_personal" class="text-sm">Tiene Email Personal</label>
+                        <input type="checkbox" x-model="email_personal" class="h-4 w-4">
+                        <label class="text-sm">Tiene Email Personal</label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="notificaciones_correo" id="notificaciones_correo" x-model="notificaciones_correo" class="h-4 w-4">
-                        <label for="notificaciones_correo" class="text-sm">Recibe notificaciones por Email</label>
+                        <input type="checkbox" x-model="notificaciones_correo" class="h-4 w-4">
+                        <label class="text-sm">Recibe notificaciones por Email</label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="notificaciones_whatsapp" id="notificaciones_whatsapp" x-model="notificaciones_whatsapp" class="h-4 w-4">
-                        <label for="notificaciones_whatsapp" class="text-sm">Recibe notificaciones por WhatsApp</label>
+                        <input type="checkbox" x-model="notificaciones_whatsapp" class="h-4 w-4">
+                        <label class="text-sm">Recibe notificaciones por WhatsApp</label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="notificaciones_push" id="notificaciones_push" x-model="notificaciones_push" class="h-4 w-4">
-                        <label for="notificaciones_push" class="text-sm">Recibe notificaciones Push</label>
+                        <input type="checkbox" x-model="notificaciones_push" class="h-4 w-4">
+                        <label class="text-sm">Recibe notificaciones Push</label>
                     </div>
                 </div>
 
                 {{-- CONTRASEÑA --}}
-                <div class="w-full"><label>Contraseña</label><input type="password" name="password" x-model="password" :required="usuarioId === null" class="w-full border rounded px-2 py-1 text-sm"></div>
-                <div class="w-full"><label>Confirmar Contraseña</label><input type="password" name="password_confirmation" x-model="password_confirmation" :required="usuarioId === null" class="w-full border rounded px-2 py-1 text-sm"></div>
+                <div class="w-full"><label>Contraseña</label><input type="password" x-model="password" :required="usuarioId === null" class="w-full border rounded px-2 py-1 text-sm"></div>
+                <div class="w-full"><label>Confirmar Contraseña</label><input type="password" x-model="password_confirmation" :required="usuarioId === null" class="w-full border rounded px-2 py-1 text-sm"></div>
             </div>
 
             {{-- BOTONES --}}
@@ -301,8 +299,9 @@
 function usuariosData() {
     return {
         // 🔹 Datos de usuarios
-        usuarios: @json($usuarios->load('perfil')), // <-- Asegúrate de enviar los usuarios con relación 'perfil'
+        usuarios: @json($usuarios->load('perfil')), 
         perfiles: @json($perfiles),
+        sucursales: @json($sucursales),
         buscar: '',
         filtroPerfil: '',
 
@@ -324,6 +323,8 @@ function usuariosData() {
         password: '',
         password_confirmation: '',
         foto: null,
+        fotoFile: null,
+        id_sucursal: '',
 
         // 🔹 Filtrado en vivo
         get filtrados() {
@@ -334,18 +335,6 @@ function usuariosData() {
                 return coincideTexto && coincidePerfil;
             });
         },
-
-        // 🔹 Vacaciones
-        modalVacaciones: false,
-        modalNuevaVacacion: false,
-        vacaciones: [],
-        vacacionTemp: { inicio: '', fin: '', descripcion: '', id: null },
-        mostrarFinalizadas: false,
-        editandoVacacion: false,
-        editandoVacacionIndex: null,
-        nombreVacaciones: '',
-        urlGuardar: '{{ route("usuarios.vacaciones.guardar") }}',
-        urlObtenerBase: '/usuarios',
 
         // --------------------------------------------------------------------
         // 🔹 Funciones de usuario
@@ -371,6 +360,7 @@ function usuariosData() {
             this.notificaciones_whatsapp = usuario.notificaciones_whatsapp;
             this.notificaciones_push = usuario.notificaciones_push;
             this.foto = usuario.foto ? '{{ asset("storage") }}/' + usuario.foto : null;
+            this.fotoFile = null;
             this.id_sucursal = usuario.id_sucursal ?? '';
             this.modalOpen = true;
         },
@@ -391,31 +381,87 @@ function usuariosData() {
             this.password = '';
             this.password_confirmation = '';
             this.foto = null;
+            this.fotoFile = null;
+            this.id_sucursal = '';
         },
 
-        // --------------------------------------------------------------------
-        // 🔹 Funciones de vacaciones
-        // --------------------------------------------------------------------
-        openVacaciones(usuario) {
-            this.usuarioId = usuario.id_usuario;
-            this.nombreVacaciones = usuario.nombre + ' ' + usuario.apellidos;
+        guardarUsuario() {
+            if(!this.nombre || !this.apellidos || !this.correo) {
+                return alert('Completa los campos requeridos.');
+            }
 
-            fetch(`${this.urlObtenerBase}/${this.usuarioId}/vacaciones`)
-                .then(res => res.json())
-                .then(data => {
-                    this.vacaciones = data.map(v => ({
-                        id: v.id_vacacion ?? v.id,
-                        inicio: v.fecha_inicio ?? v.inicio,
-                        fin: v.fecha_fin ?? v.fin,
-                        descripcion: v.descripcion ?? v.motivo ?? '',
-                        finalizada: v.finalizada ?? false
-                    }));
-                    this.modalVacaciones = true;
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Error cargando vacaciones (ver consola).');
-                });
+            // Usamos FormData para subir archivos
+            const formData = new FormData();
+            formData.append('nombre', this.nombre);
+            formData.append('apellidos', this.apellidos);
+            formData.append('id_perfil', this.id_perfil);
+            formData.append('superior', this.superior);
+            formData.append('correo', this.correo);
+            formData.append('codigo_pais', this.codigo_pais);
+            formData.append('telefono', this.telefono);
+            formData.append('reportes_adicionales', this.reportes_adicionales ? 1 : 0);
+            formData.append('email_personal', this.email_personal ? 1 : 0);
+            formData.append('notificaciones_correo', this.notificaciones_correo ? 1 : 0);
+            formData.append('notificaciones_whatsapp', this.notificaciones_whatsapp ? 1 : 0);
+            formData.append('notificaciones_push', this.notificaciones_push ? 1 : 0);
+            formData.append('password', this.password);
+            formData.append('password_confirmation', this.password_confirmation);
+            formData.append('id_sucursal', this.id_sucursal);
+
+            if(this.fotoFile) formData.append('foto', this.fotoFile);
+
+            const url = this.usuarioId ? `/usuarios/${this.usuarioId}` : '{{ route("usuarios.store") }}';
+            const method = this.usuarioId ? 'POST' : 'POST'; // PUT lo convertimos a POST con _method
+            if(this.usuarioId) formData.append('_method', 'PUT');
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    if(this.usuarioId) {
+                        const index = this.usuarios.findIndex(u => u.id_usuario === data.usuario.id_usuario);
+                        if(index !== -1) this.usuarios[index] = data.usuario;
+                    } else {
+                        this.usuarios.unshift(data.usuario);
+                    }
+                    this.modalOpen = false;
+                    this.resetModal();
+                } else alert(data.message || 'No se pudo guardar el usuario.');
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error al guardar usuario (ver consola).');
+            });
+        },
+
+        seleccionarFoto(event) {
+            this.fotoFile = event.target.files[0];
+            this.foto = URL.createObjectURL(this.fotoFile);
+        },
+
+        eliminarUsuario(usuario) {
+            if(!confirm(`¿Deseas eliminar al usuario ${usuario.nombre} ${usuario.apellidos}?`)) return;
+
+            fetch(`/usuarios/${usuario.id_usuario}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) this.usuarios = this.usuarios.filter(u => u.id_usuario !== usuario.id_usuario);
+                else alert(data.message || 'No se pudo eliminar el usuario.');
+            })
+            .catch(err => console.error(err));
         },
 
         openModalNuevaVacacion() {
@@ -434,43 +480,32 @@ function usuariosData() {
         eliminarVacacion(v) {
             const id = v.id ?? v.id_vacacion ?? null;
             if (!id) return alert('No se puede eliminar una vacación que no existe.');
-
             if (!confirm('¿Deseas eliminar esta vacación?')) return;
 
             fetch(`/usuarios/vacaciones/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept':'application/json' }
             })
             .then(res => res.json())
             .then(data => {
-                if (data.success) this.vacaciones = this.vacaciones.filter(x => (x.id ?? x.id_vacacion) !== id);
+                if(data.success) this.vacaciones = this.vacaciones.filter(x => (x.id ?? x.id_vacacion) !== id);
                 else alert(data.message || 'No se pudo eliminar la vacación.');
             })
-            .catch(err => {
-                console.error(err);
-                alert('Error al eliminar vacación (ver consola).');
-            });
+            .catch(err => console.error(err));
         },
 
         toggleFinalizada(v) {
             fetch(`${this.urlObtenerBase}/vacaciones/${v.id}/toggle`, {
                 method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept':'application/json' }
             })
             .then(res => res.json())
-            .then(data => { if (data.success) v.finalizada = data.finalizada; })
+            .then(data => { if(data.success) v.finalizada = data.finalizada; })
             .catch(err => console.error(err));
         },
 
         guardarVacacion() {
-            if (!this.vacacionTemp.inicio || !this.vacacionTemp.fin) return alert('Completa inicio y fin.');
+            if(!this.vacacionTemp.inicio || !this.vacacionTemp.fin) return alert('Completa inicio y fin.');
 
             const payload = {
                 id_usuario: this.usuarioId,
@@ -479,60 +514,38 @@ function usuariosData() {
                 descripcion: this.vacacionTemp.descripcion
             };
 
-            // Editar
-            if (this.editandoVacacion && this.vacacionTemp.id) {
+            if(this.editandoVacacion && this.vacacionTemp.id){
                 fetch(`${this.urlObtenerBase}/vacaciones/${this.vacacionTemp.id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
                     body: JSON.stringify(payload)
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success) {
+                    if(data.success){
                         const idx = this.editandoVacacionIndex;
-                        this.vacaciones[idx] = {
-                            id: this.vacacionTemp.id,
-                            inicio: payload.fecha_inicio,
-                            fin: payload.fecha_fin,
-                            descripcion: payload.descripcion,
-                            finalizada: this.vacaciones[idx].finalizada
-                        };
+                        this.vacaciones[idx] = {...this.vacaciones[idx], ...payload};
                         this.modalNuevaVacacion = false;
                     } else alert(data.message || 'No se pudo actualizar.');
                 }).catch(err => console.error(err));
                 return;
             }
 
-            // Crear
             fetch(this.urlGuardar, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
+                headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
                 body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    this.vacaciones.unshift({
-                        id: data.id ?? Date.now(),
-                        inicio: payload.fecha_inicio,
-                        fin: payload.fecha_fin,
-                        descripcion: payload.descripcion,
-                        finalizada: false
-                    });
+                if(data.success){
+                    this.vacaciones.unshift({...payload, id: data.id ?? Date.now(), finalizada: false});
                     this.modalNuevaVacacion = false;
                 } else alert(data.message || 'No se pudo guardar la vacación.');
             })
             .catch(err => console.error(err));
         }
-    };
+    }
 }
 </script>
 @endsection

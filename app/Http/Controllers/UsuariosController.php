@@ -4,104 +4,102 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use App\Models\Perfil;
-use App\Models\Vacacion;
 use App\Models\Sucursal;
+use App\Models\Vacacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class UsuariosController extends Controller
 {
-    /** Mostrar lista de usuarios con filtro */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Usuario::with(['perfil', 'sucursal']);
-
-        if ($request->filled('perfil')) {
-            $query->where('id_perfil', $request->perfil);
-        }
-
-        if ($request->filled('buscar')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('apellidos', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('correo', 'like', '%' . $request->buscar . '%');
-            });
-        }
-
-        $usuarios = $query->paginate(10);
+        $usuarios = Usuario::with('perfil')->get();
         $perfiles = Perfil::all();
         $sucursales = Sucursal::all();
 
         return view('usuarios.index', compact('usuarios', 'perfiles', 'sucursales'));
     }
 
-    /** Guardar nuevo usuario */
     public function store(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|max:50',
             'apellidos' => 'required|string|max:50',
+            'id_perfil' => 'required|integer',
             'correo' => 'required|email|unique:usuario,correo',
-            'password' => 'required|confirmed|min:6',
-            'id_perfil' => 'required|exists:perfil,id_perfil',
-            'id_sucursal' => 'nullable|exists:sucursal,id_sucursal',
+            'password' => 'required|string|min:6|confirmed',
+            'telefono' => 'nullable|string|max:20',
+            'id_sucursal' => 'nullable|integer',
+            'superior' => 'nullable|string|max:55',
+            'foto' => 'nullable|image|max:2048'
         ]);
 
-        $usuario = new Usuario();
-        $usuario->nombre = $request->nombre;
-        $usuario->apellidos = $request->apellidos;
-        $usuario->correo = $request->correo;
-        $usuario->password = bcrypt($request->password);
-        $usuario->id_perfil = $request->id_perfil;
-        $usuario->superior = $request->superior ?? null;
-        $usuario->id_sucursal = $request->id_sucursal;
-        $usuario->telefono = $request->telefono ?? null;
-        $usuario->reportes_adicionales = $request->has('reportes_adicionales') ? 1 : 0;
+        $fotoPath = $request->file('foto') ? $request->file('foto')->store('usuarios', 'public') : null;
 
-        if ($request->hasFile('foto')) {
-            $usuario->foto = $request->file('foto')->store('usuarios', 'public');
-        }
+        $usuario = Usuario::create([
+            'nombre' => $request->nombre,
+            'apellidos' => $request->apellidos,
+            'id_perfil' => $request->id_perfil,
+            'correo' => $request->correo,
+            'password' => bcrypt($request->password),
+            'telefono' => $request->telefono,
+            'id_sucursal' => $request->id_sucursal,
+            'superior' => $request->superior,
+            'reportes_adicionales' => $request->reportes_adicionales ?? 0,
+            'foto' => $fotoPath,
+            'estatus' => 1,
+            'sistema' => 'checklist',
+            'app' => 'web',
+            'nivel' => 'Sucursal',
+        ]);
 
-        $usuario->save();
-
-        return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
+        return response()->json([
+            'success' => true,
+            'usuario' => $usuario
+        ]);
     }
 
-    /** Actualizar usuario */
-    public function update(Request $request, Usuario $usuario)
+    public function update(Request $request, $id)
     {
+        $usuario = Usuario::findOrFail($id);
+
         $request->validate([
             'nombre' => 'required|string|max:50',
             'apellidos' => 'required|string|max:50',
-            'correo' => 'required|email|unique:usuario,correo,' . $usuario->id_usuario . ',id_usuario',
-            'id_perfil' => 'required|exists:perfil,id_perfil',
-            'id_sucursal' => 'nullable|exists:sucursal,id_sucursal',
+            'id_perfil' => 'required|integer',
+            'correo' => 'required|email|unique:usuario,correo,' . $id . ',id_usuario',
+            'password' => 'nullable|string|min:6|confirmed',
+            'telefono' => 'nullable|string|max:20',
+            'id_sucursal' => 'nullable|integer',
+            'superior' => 'nullable|string|max:55',
+            'foto' => 'nullable|image|max:2048'
         ]);
 
-        $usuario->nombre = $request->nombre;
-        $usuario->apellidos = $request->apellidos;
-        $usuario->correo = $request->correo;
-        $usuario->id_perfil = $request->id_perfil;
-        $usuario->superior = $request->superior ?? null;
-        $usuario->id_sucursal = $request->id_sucursal;
-        $usuario->telefono = $request->telefono ?? null;
-        $usuario->reportes_adicionales = $request->has('reportes_adicionales') ? 1 : 0;
-
-        if ($request->hasFile('foto')) {
-            $usuario->foto = $request->file('foto')->store('usuarios', 'public');
+        if ($request->file('foto')) {
+            if ($usuario->foto) Storage::disk('public')->delete($usuario->foto);
+            $fotoPath = $request->file('foto')->store('usuarios', 'public');
+            $usuario->foto = $fotoPath;
         }
 
-        $usuario->save();
+        $usuario->update([
+            'nombre' => $request->nombre,
+            'apellidos' => $request->apellidos,
+            'id_perfil' => $request->id_perfil,
+            'correo' => $request->correo,
+            'telefono' => $request->telefono,
+            'id_sucursal' => $request->id_sucursal,
+            'superior' => $request->superior,
+            'reportes_adicionales' => $request->reportes_adicionales ?? 0,
+            'password' => $request->password ? bcrypt($request->password) : $usuario->password,
+        ]);
 
-        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
+        return response()->json([
+            'success' => true,
+            'usuario' => $usuario
+        ]);
     }
 
-    /** Eliminar usuario */
-    public function destroy(Usuario $usuario)
-    {
-        $usuario->delete();
-        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
 
     /* ---------------------- VACACIONES ---------------------- */
 
@@ -151,12 +149,12 @@ class UsuariosController extends Controller
 
         try {
             $vacacion->delete();
-            return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Error eliminando vacación: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error al eliminar.'], 500);
         }
+        }
     }
-}
+
 
 

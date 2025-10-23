@@ -11,7 +11,6 @@ class Usuario extends Model
 
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
-    public $timestamps = false;
 
     protected $fillable = [
         'nombre',
@@ -25,7 +24,13 @@ class Usuario extends Model
         'reportes_adicionales',
         'password',
         'estatus',
-        'nivel'
+        'sistema',
+        'app',
+        'nivel',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     public function perfil()
@@ -33,17 +38,11 @@ class Usuario extends Model
         return $this->belongsTo(Perfil::class, 'id_perfil');
     }
 
-    public function sucursal()
+    public function vacaciones()
     {
-        return $this->belongsTo(Sucursal::class, 'id_sucursal');
-    }
-    /**
-     * Relación con perfil superior
-     */
-    public function superiorUsuario()
-    {
-        return $this->belongsTo(Usuario::class, 'superior');
+        return $this->hasMany(Vacacion::class, 'id_usuario', 'id_usuario');
     }
 }
+
 
 
