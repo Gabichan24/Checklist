@@ -1,18 +1,22 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
+import defaultTheme from 'tailwindcss/defaultTheme'
+import forms from '@tailwindcss/forms'
 
-/** @type {import('tailwindcss').Config} */
 export default {
     content: [
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
+        './resources/**/*.ts',
+        './resources/**/*.jsx',
+        './resources/**/*.tsx',
     ],
-    darkMode: 'class', // ✅ Habilita modo oscuro basado en clase 'dark'
+
+    darkMode: 'class',
+
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Instrument Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                sans: ['Instrument Sans', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: '#2563EB',
@@ -21,5 +25,7 @@ export default {
             },
         },
     },
+
     plugins: [forms],
 }
+

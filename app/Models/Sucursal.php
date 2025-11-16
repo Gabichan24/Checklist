@@ -24,7 +24,8 @@ class Sucursal extends Model
         'radio',
         'estatus',
         'zona_horaria',
-        'id_area', // añadimos para guardar los IDs de áreas
+        'id_area', // guardamos los IDs de áreas
+        'maps',    // NUEVO: URL de Google Maps
     ];
 
     // Relación con Zonas (una sucursal pertenece a una zona)
@@ -48,5 +49,4 @@ class Sucursal extends Model
         return Area::whereIn('id_area', $ids)->get();
     }
 }
-
 

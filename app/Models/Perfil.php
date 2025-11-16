@@ -9,10 +9,13 @@ class Perfil extends Model
 {
     use HasFactory;
 
-    protected $table = 'perfil';
-    protected $primaryKey = 'id_perfil';
-    public $timestamps = false;
+    // Nombre exacto de la tabla
+    protected $table = 'perfil'; // ← tu tabla se llama "perfil"
 
+    // Nombre de la clave primaria
+    protected $primaryKey = 'id_perfil'; // si tu PK se llama id_perfil
+
+    // Campos que se pueden asignar masivamente
     protected $fillable = [
         'nombre_perfil',
         'descripcion',
@@ -22,9 +25,19 @@ class Perfil extends Model
         'estatus',
     ];
 
+    // Desactivar timestamps si tu tabla no tiene created_at/updated_at
+    public $timestamps = false;
+
+    // Relación con permisos asignados (muchos a muchos)
     public function permisos()
     {
-        return $this->hasMany(PerfilPermiso::class, 'id_perfil', 'id_perfil');
+        return $this->belongsToMany(
+            Permisoglobal::class,
+            'id_perfil_permiso',    // nombre de la tabla pivote
+            'id_perfil',         // FK de esta tabla en pivote
+            'id_permiso'         // FK de la tabla permiso en pivote
+        );
     }
 }
+
 

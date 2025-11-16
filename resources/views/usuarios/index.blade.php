@@ -35,57 +35,71 @@
         </select>
     </div>
 
-    {{-- Lista de usuarios --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="usuario in filtrados" :key="usuario.id_usuario">
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 relative overflow-visible">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-4 flex-1 min-w-0">
-                        <template x-if="usuario.foto">
-                            <img :src="'{{ asset('storage') }}/' + usuario.foto" class="w-16 h-16 rounded-full object-cover border">
-                        </template>
-                        <template x-if="!usuario.foto">
-                            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        </template>
-
-                        <div class="flex flex-col truncate">
-                            <h2 class="font-semibold text-gray-800 uppercase text-lg truncate" x-text="usuario.nombre + ' ' + usuario.apellidos"></h2>
-                            <p class="text-sm text-gray-500 truncate" x-text="usuario.perfil?.nombre_perfil ?? 'Sin perfil'"></p>
-                        </div>
+    <!-- Lista de usuarios en 3 columnas -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <template x-for="usuario in filtrados" :key="usuario.id_usuario">
+        <div class="bg-white rounded-xl shadow p-4 relative flex flex-col justify-between">
+            
+            <!-- Header de tarjeta -->
+            <div class="flex items-center gap-4 mb-4">
+                <template x-if="usuario.foto">
+                    <img :src="'{{ asset('storage') }}/' + usuario.foto"
+                         class="w-16 h-16 rounded-full object-cover border">
+                </template>
+                <template x-if="!usuario.foto">
+                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-2xl">
+                        <i class="fas fa-user"></i>
                     </div>
-
-                    {{-- Menú de opciones --}}
-                    <div class="ml-2 relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="text-gray-400 hover:text-gray-600 text-2xl absolute top-0 right-0">⋮</button>
-                        <div x-show="open" @click.outside="open = false"
-                             x-transition
-                             class="absolute right-0 mt-6 w-44 bg-white rounded-xl shadow-md border z-50">
-                            <button type="button" @click="openModalEditar(usuario)" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 w-full text-left">✏️ Editar</button>
-                            <button type="button" @click="openVacaciones(usuario)" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 w-full text-left">🌴 Vacaciones</button>
-                            <form :action="`/usuarios/${usuario.id_usuario}`" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">🗑️ Eliminar</button>
-                            </form>
-                        </div>
-                    </div>
+                </template>
+                <div class="flex flex-col truncate">
+                    <h2 class="font-bold text-gray-800 uppercase text-lg truncate" x-text="usuario.nombre + ' ' + usuario.apellidos"></h2>
+                    <p class="text-gray-500 text-sm truncate" x-text="usuario.perfil?.nombre_perfil ?? 'Sin perfil'"></p>
+                    <p class="text-gray-400 text-xs truncate" x-text="usuario.sucursal ?? ''"></p>
                 </div>
-
-                <div class="mb-3">
-                    <span class="text-sm font-medium px-3 py-1 rounded-full"
-                          :class="usuario.estatus ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'"
-                          x-text="usuario.estatus ? '🟢 Activo' : '🔴 Inactivo'"></span>
-                </div>
-
-                <p class="text-sm text-gray-700 truncate" x-text="usuario.correo"></p>
             </div>
-        </template>
-        <template x-if="filtrados.length === 0">
-            <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-4 text-gray-500">No se encontraron usuarios</div>
-        </template>
-    </div>
+
+            <!-- Menú de 3 puntos -->
+            <div class="ml-2 relative" x-data="{ open: false }">
+                <button @click="open = !open" class="text-gray-400 hover:text-gray-600 text-2xl absolute top-0 right-0">⋮</button>
+                <div x-show="open" @click.outside="open = false"
+                     x-transition
+                     class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-md border z-50">
+                    <button type="button" @click="$dispatch('editar-usuario', usuario)" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 w-full text-left">✏️ Editar</button>
+                    <button type="button" @click="$dispatch('vacaciones-usuario', usuario)" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 w-full text-left">🌴 Vacaciones</button>
+                    <form :action="`/usuarios/${usuario.id_usuario}`" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">🗑️ Eliminar</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Estado y correo -->
+            <div class="mb-2">
+                <span class="text-xs px-2 py-1 rounded-full"
+      :class="usuario.en_vacaciones ? 'bg-yellow-100 text-yellow-600' : (usuario.estatus ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600')"
+      x-text="usuario.en_vacaciones ? 'Vacaciones' : (usuario.estatus ? 'Activo' : 'Vacaciones')"></span>
+            </div>
+            <p class="text-gray-600 text-sm truncate mb-2" x-text="usuario.correo"></p>
+
+            <!-- Última conexión, SO y navegador -->
+            <p class="text-gray-400 text-xs truncate">
+                <span x-text="usuario.ultima_conexion ? new Date(usuario.ultima_conexion).toLocaleString() : 'Sin registro'"></span>
+                <template x-if="usuario.sistema">
+                    <span x-text="' | ' + usuario.sistema + (usuario.app ? ' (' + usuario.app + ')' : '')"></span>
+                </template>
+            </p>
+
+        </div>
+    </template>
+
+    <template x-if="filtrados.length === 0">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-4 text-gray-500">No se encontraron usuarios</div>
+    </template>
+</div>
+
+<!-- Escucha eventos para abrir modales -->
+<div x-data @editar-usuario.window="openModalEditar($event.detail)" @vacaciones-usuario.window="abrirModalVacaciones($event.detail)"></div>
+
 
 {{-- MODAL CREAR/EDITAR USUARIO --}}
 <div x-show="modalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4" x-cloak>
@@ -298,14 +312,14 @@
 <script>
 function usuariosData() {
     return {
-        // 🔹 Datos de usuarios
-        usuarios: @json($usuarios->load('perfil')), 
+        // Datos
+        usuarios: @json($usuarios->load('perfil','vacaciones')),
         perfiles: @json($perfiles),
         sucursales: @json($sucursales),
         buscar: '',
         filtroPerfil: '',
 
-        // 🔹 Modal de usuario
+        // Modal usuario
         modalOpen: false,
         usuarioId: null,
         nombre: '',
@@ -326,46 +340,32 @@ function usuariosData() {
         fotoFile: null,
         id_sucursal: '',
 
-        // 🔹 Filtrado en vivo
+        // Vacaciones
+        vacaciones: [],
+        modalVacaciones: false,
+        modalNuevaVacacion: false,
+        nombreVacaciones: '',
+        mostrarFinalizadas: false,
+        editandoVacacion: false,
+        editandoVacacionIndex: null,
+        vacacionTemp: { inicio:'', fin:'', descripcion:'', id:null },
+
+        // Filtrado en vivo
         get filtrados() {
             const texto = this.buscar.toLowerCase();
-            return this.usuarios.filter(u => {
+            return this.usuarios.map(u => {
+                this.actualizarEstadoVacaciones(u);
+                return u;
+            }).filter(u => {
                 const coincideTexto = (`${u.nombre} ${u.apellidos} ${u.correo}`).toLowerCase().includes(texto);
                 const coincidePerfil = this.filtroPerfil ? u.id_perfil == this.filtroPerfil : true;
                 return coincideTexto && coincidePerfil;
             });
         },
 
-        // --------------------------------------------------------------------
-        // 🔹 Funciones de usuario
-        // --------------------------------------------------------------------
-        openModalCrear() {
-            this.usuarioId = null;
-            this.resetModal();
-            this.modalOpen = true;
-        },
-
-        openModalEditar(usuario) {
-            this.usuarioId = usuario.id_usuario;
-            this.nombre = usuario.nombre;
-            this.apellidos = usuario.apellidos;
-            this.id_perfil = usuario.id_perfil;
-            this.superior = usuario.superior;
-            this.correo = usuario.correo;
-            this.codigo_pais = usuario.codigo_pais;
-            this.telefono = usuario.telefono;
-            this.reportes_adicionales = usuario.reportes_adicionales;
-            this.email_personal = usuario.email_personal;
-            this.notificaciones_correo = usuario.notificaciones_correo;
-            this.notificaciones_whatsapp = usuario.notificaciones_whatsapp;
-            this.notificaciones_push = usuario.notificaciones_push;
-            this.foto = usuario.foto ? '{{ asset("storage") }}/' + usuario.foto : null;
-            this.fotoFile = null;
-            this.id_sucursal = usuario.id_sucursal ?? '';
-            this.modalOpen = true;
-        },
-
+        // Funciones usuario
         resetModal() {
+            this.usuarioId = null;
             this.nombre = '';
             this.apellidos = '';
             this.id_perfil = '';
@@ -385,12 +385,39 @@ function usuariosData() {
             this.id_sucursal = '';
         },
 
-        guardarUsuario() {
-            if(!this.nombre || !this.apellidos || !this.correo) {
-                return alert('Completa los campos requeridos.');
-            }
+        openModalCrear() {
+            this.resetModal();
+            this.modalOpen = true;
+        },
 
-            // Usamos FormData para subir archivos
+        openModalEditar(usuario) {
+            this.usuarioId = usuario.id_usuario;
+            this.nombre = usuario.nombre;
+            this.apellidos = usuario.apellidos;
+            this.id_perfil = usuario.id_perfil;
+            this.superior = usuario.superior;
+            this.correo = usuario.correo;
+            this.codigo_pais = usuario.codigo_pais;
+            this.telefono = usuario.telefono;
+            this.reportes_adicionales = !!usuario.reportes_adicionales;
+            this.email_personal = !!usuario.email_personal;
+            this.notificaciones_correo = !!usuario.notificaciones_correo;
+            this.notificaciones_whatsapp = !!usuario.notificaciones_whatsapp;
+            this.notificaciones_push = !!usuario.notificaciones_push;
+            this.foto = usuario.foto ? '{{ asset("storage") }}/' + usuario.foto : null;
+            this.fotoFile = null;
+            this.id_sucursal = usuario.id_sucursal ?? '';
+            this.modalOpen = true;
+        },
+
+        seleccionarFoto(event) {
+            this.fotoFile = event.target.files[0];
+            this.foto = URL.createObjectURL(this.fotoFile);
+        },
+
+        guardarUsuario() {
+            if(!this.nombre || !this.apellidos || !this.correo) return alert('Completa los campos requeridos.');
+
             const formData = new FormData();
             formData.append('nombre', this.nombre);
             formData.append('apellidos', this.apellidos);
@@ -407,25 +434,20 @@ function usuariosData() {
             formData.append('password', this.password);
             formData.append('password_confirmation', this.password_confirmation);
             formData.append('id_sucursal', this.id_sucursal);
-
             if(this.fotoFile) formData.append('foto', this.fotoFile);
 
             const url = this.usuarioId ? `/usuarios/${this.usuarioId}` : '{{ route("usuarios.store") }}';
-            const method = this.usuarioId ? 'POST' : 'POST'; // PUT lo convertimos a POST con _method
             if(this.usuarioId) formData.append('_method', 'PUT');
 
             fetch(url, {
-                method: method,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
-                if(data.success) {
-                    if(this.usuarioId) {
+                if(data.success){
+                    if(this.usuarioId){
                         const index = this.usuarios.findIndex(u => u.id_usuario === data.usuario.id_usuario);
                         if(index !== -1) this.usuarios[index] = data.usuario;
                     } else {
@@ -434,16 +456,10 @@ function usuariosData() {
                     this.modalOpen = false;
                     this.resetModal();
                 } else alert(data.message || 'No se pudo guardar el usuario.');
-            })
-            .catch(err => {
+            }).catch(err => {
                 console.error(err);
                 alert('Error al guardar usuario (ver consola).');
             });
-        },
-
-        seleccionarFoto(event) {
-            this.fotoFile = event.target.files[0];
-            this.foto = URL.createObjectURL(this.fotoFile);
         },
 
         eliminarUsuario(usuario) {
@@ -451,22 +467,46 @@ function usuariosData() {
 
             fetch(`/usuarios/${usuario.id_usuario}`, {
                 method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
+                headers: { 'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' }
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success) this.usuarios = this.usuarios.filter(u => u.id_usuario !== usuario.id_usuario);
                 else alert(data.message || 'No se pudo eliminar el usuario.');
-            })
-            .catch(err => console.error(err));
+            }).catch(err => console.error(err));
+        },
+
+        // Vacaciones
+        abrirModalVacaciones(usuario) {
+            this.usuarioId = usuario.id_usuario;
+            this.nombreVacaciones = `${usuario.nombre} ${usuario.apellidos}`;
+            this.vacaciones = [];
+            this.modalVacaciones = true;
+
+            fetch(`/usuarios/${usuario.id_usuario}/vacaciones`, { method: 'GET', headers: { 'Accept':'application/json' } })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    this.vacaciones = data.vacaciones.map(v => ({
+                        id: v.id_vacacion ?? v.id,
+                        inicio: v.fecha_inicio ?? v.inicio,
+                        fin: v.fecha_fin ?? v.fin,
+                        descripcion: v.descripcion ?? v.motivo ?? '',
+                        finalizada: v.finalizada ?? false
+                    }));
+                    const u = this.usuarios.find(x => x.id_usuario === this.usuarioId);
+                    if(u) {
+                        u.vacaciones = [...this.vacaciones];
+                        this.actualizarEstadoVacaciones(u);
+                    }
+                } else alert(data.message || 'No se pudieron cargar las vacaciones.');
+            }).catch(err => console.error(err));
         },
 
         openModalNuevaVacacion() {
             this.editandoVacacion = false;
-            this.vacacionTemp = { inicio: '', fin: '', descripcion: '', id: null };
+            this.editandoVacacionIndex = null;
+            this.vacacionTemp = { inicio:'', fin:'', descripcion:'', id:null };
             this.modalNuevaVacacion = true;
         },
 
@@ -477,45 +517,19 @@ function usuariosData() {
             this.modalNuevaVacacion = true;
         },
 
-        eliminarVacacion(v) {
-            const id = v.id ?? v.id_vacacion ?? null;
-            if (!id) return alert('No se puede eliminar una vacación que no existe.');
-            if (!confirm('¿Deseas eliminar esta vacación?')) return;
-
-            fetch(`/usuarios/vacaciones/${id}`, {
-                method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept':'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) this.vacaciones = this.vacaciones.filter(x => (x.id ?? x.id_vacacion) !== id);
-                else alert(data.message || 'No se pudo eliminar la vacación.');
-            })
-            .catch(err => console.error(err));
-        },
-
-        toggleFinalizada(v) {
-            fetch(`${this.urlObtenerBase}/vacaciones/${v.id}/toggle`, {
-                method: 'PATCH',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept':'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => { if(data.success) v.finalizada = data.finalizada; })
-            .catch(err => console.error(err));
-        },
-
         guardarVacacion() {
             if(!this.vacacionTemp.inicio || !this.vacacionTemp.fin) return alert('Completa inicio y fin.');
-
             const payload = {
                 id_usuario: this.usuarioId,
                 fecha_inicio: this.vacacionTemp.inicio,
                 fecha_fin: this.vacacionTemp.fin,
                 descripcion: this.vacacionTemp.descripcion
             };
+            const usuario = this.usuarios.find(u => u.id_usuario === this.usuarioId);
 
+            // Editar
             if(this.editandoVacacion && this.vacacionTemp.id){
-                fetch(`${this.urlObtenerBase}/vacaciones/${this.vacacionTemp.id}`, {
+                fetch(`/usuarios/vacaciones/${this.vacacionTemp.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
                     body: JSON.stringify(payload)
@@ -523,15 +537,17 @@ function usuariosData() {
                 .then(res => res.json())
                 .then(data => {
                     if(data.success){
-                        const idx = this.editandoVacacionIndex;
-                        this.vacaciones[idx] = {...this.vacaciones[idx], ...payload};
+                        this.vacaciones[this.editandoVacacionIndex] = { ...this.vacaciones[this.editandoVacacionIndex], ...payload };
+                        if(usuario) usuario.vacaciones = [...this.vacaciones];
+                        if(usuario) this.actualizarEstadoVacaciones(usuario);
                         this.modalNuevaVacacion = false;
                     } else alert(data.message || 'No se pudo actualizar.');
                 }).catch(err => console.error(err));
                 return;
             }
 
-            fetch(this.urlGuardar, {
+            // Crear
+            fetch('{{ route("usuarios.vacaciones.guardar") }}', {
                 method: 'POST',
                 headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
                 body: JSON.stringify(payload)
@@ -539,13 +555,65 @@ function usuariosData() {
             .then(res => res.json())
             .then(data => {
                 if(data.success){
-                    this.vacaciones.unshift({...payload, id: data.id ?? Date.now(), finalizada: false});
+                    this.vacaciones.unshift({ ...payload, id: data.id ?? Date.now(), finalizada: false });
+                    if(usuario) usuario.vacaciones = [...this.vacaciones];
+                    if(usuario) this.actualizarEstadoVacaciones(usuario);
                     this.modalNuevaVacacion = false;
-                } else alert(data.message || 'No se pudo guardar la vacación.');
+                } else alert(data.message || 'No se pudo guardar.');
+            }).catch(err => console.error(err));
+        },
+
+        toggleFinalizada(v) {
+            fetch(`/usuarios/vacaciones/${v.id}/toggle`, {
+                method: 'PATCH',
+                headers: { 'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' }
             })
-            .catch(err => console.error(err));
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    v.finalizada = data.finalizada;
+                    const usuario = this.usuarios.find(x => x.id_usuario === this.usuarioId);
+                    if(usuario){
+                        const idx = (usuario.vacaciones || []).findIndex(x => x.id === v.id);
+                        if(idx !== -1) usuario.vacaciones[idx] = v;
+                        this.actualizarEstadoVacaciones(usuario);
+                    }
+                }
+            }).catch(err => console.error(err));
+        },
+
+        eliminarVacacion(v) {
+            if(!confirm('¿Deseas eliminar esta vacación?')) return;
+            const id = v.id;
+            if(!id) return;
+
+            fetch(`/usuarios/vacaciones/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    this.vacaciones = this.vacaciones.filter(x => x.id !== id);
+                    const usuario = this.usuarios.find(u => u.id_usuario === this.usuarioId);
+                    if(usuario){
+                        usuario.vacaciones = [...this.vacaciones];
+                        this.actualizarEstadoVacaciones(usuario);
+                    }
+                } else alert(data.message || 'No se pudo eliminar.');
+            }).catch(err => console.error(err));
+        },
+
+        actualizarEstadoVacaciones(usuario){
+            const hoy = new Date();
+            usuario.en_vacaciones = (usuario.vacaciones || []).some(v => {
+                const inicio = new Date(v.inicio ?? v.fecha_inicio);
+                const fin = new Date(v.fin ?? v.fecha_fin);
+                const finalizada = v.finalizada ?? false;
+                return inicio <= hoy && hoy <= fin && !finalizada;
+            });
         }
-    }
+    };
 }
 </script>
 @endsection

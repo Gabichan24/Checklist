@@ -44,11 +44,13 @@ class SucursalesController extends Controller
             'direccion' => 'nullable|string|max:200',
             'areas' => 'nullable|array',
             'areas.*' => 'exists:area,id_area',
+            'maps' => 'nullable|string|max:255', // NUEVO: URL de Google Maps
         ]);
 
         $sucursal = new Sucursal();
         $sucursal->nombre = $request->nombre;
         $sucursal->clave = $request->identificador;
+        $sucursal->identificador = $request->identificador;
         $sucursal->id_zona = $request->id_zona;
         $sucursal->zona_horaria = $request->zona_horaria;
         $sucursal->codigo_postal = $request->codigo_postal;
@@ -56,14 +58,15 @@ class SucursalesController extends Controller
         $sucursal->latitud = $request->latitud;
         $sucursal->longitud = $request->longitud;
         $sucursal->radio = $request->radio;
-        $sucursal->estatus = 'Activo';
         $sucursal->id_area = $request->areas ? implode(',', $request->areas) : null;
+        $sucursal->maps = $request->maps; // asignamos maps
+        $sucursal->estatus = 'Activo';
         $sucursal->save();
 
         return redirect()->route('sucursales.index')->with('success', 'Sucursal creada correctamente.');
     }
 
-    // ✏️ Mostrar formulario de edición (opcional si usas modal)
+    // ✏️ Editar sucursal
     public function edit($id)
     {
         $sucursal = Sucursal::findOrFail($id);
@@ -90,6 +93,7 @@ class SucursalesController extends Controller
             'direccion' => 'nullable|string|max:200',
             'areas' => 'nullable|array',
             'areas.*' => 'exists:area,id_area',
+            'maps' => 'nullable|string|max:255', // NUEVO: URL de Google Maps
         ]);
 
         $sucursal->nombre = $request->nombre;
@@ -103,6 +107,7 @@ class SucursalesController extends Controller
         $sucursal->longitud = $request->longitud;
         $sucursal->radio = $request->radio;
         $sucursal->id_area = $request->areas ? implode(',', $request->areas) : null;
+        $sucursal->maps = $request->maps; // asignamos maps
         $sucursal->save();
 
         return redirect()->route('sucursales.index')->with('success', 'Sucursal actualizada correctamente.');

@@ -13,21 +13,24 @@ class Usuario extends Model
     protected $primaryKey = 'id_usuario';
 
     protected $fillable = [
-        'nombre',
-        'apellidos',
-        'id_perfil',
-        'superior',
-        'id_sucursal',
-        'correo',
-        'telefono',
-        'foto',
-        'reportes_adicionales',
-        'password',
-        'estatus',
-        'sistema',
-        'app',
-        'nivel',
-    ];
+    'nombre',
+    'apellidos',
+    'id_perfil',
+    'superior',
+    'id_sucursal',
+    'correo',
+    'telefono',
+    'foto',
+    'reportes_adicionales',
+    'password',
+    'estatus',
+    'sistema',
+    'app',
+    'nivel',
+    'ultima_conexion',        // ⬅️ nueva columna para fecha y hora
+    'ultimo_dispositivo',     // ⬅️ nueva columna para el nombre del dispositivo
+    'ultimo_navegador',       // ⬅️ nueva columna para navegador y versión
+];
 
     protected $hidden = [
         'password',

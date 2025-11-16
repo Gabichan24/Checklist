@@ -16,6 +16,7 @@
         latitud: '',
         longitud: '',
         radio: '',
+        maps: '', // nuevo campo para URL de Google Maps
         search: '',
         sucursales: @js($sucursales),
         zonas: @js($zonas),
@@ -94,6 +95,7 @@
                                     latitud = sucursal.latitud;
                                     longitud = sucursal.longitud;
                                     radio = sucursal.radio;
+                                    maps = sucursal.maps; // asigna valor Maps
                                     $nextTick(() => {
                                         $refs.areasModal.seleccionadas = sucursal.id_area
                                             ? sucursal.id_area.split(',').map(Number)
@@ -247,6 +249,12 @@
                     <label class="block text-sm font-medium mb-1">Radio</label>
                     <input type="number" name="radio" class="w-full border rounded px-2 py-1 text-sm">
                 </div>
+
+                <!-- Maps -->
+                <div class="sm:col-span-1">
+                    <label class="block text-sm font-medium mb-1">Maps</label>
+                    <input type="text" name="maps" class="w-full border rounded px-2 py-1 text-sm" placeholder="https://www.google.com/maps?q=lat,long">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white pt-4">
@@ -257,7 +265,7 @@
     </div>
 </div>
 
-   <!-- Modal Editar -->
+<!-- Modal Editar -->
 <div x-show="openModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4" x-cloak>
     <div class="bg-white rounded-lg p-6 w-full max-w-xl max-h-[85vh] overflow-y-auto">
 
@@ -343,12 +351,11 @@
                             <span x-show="seleccionadas.length === 0" class="text-gray-400">Selecciona áreas...</span>
                         </div>
 
-                        <!-- Opciones desplegables -->
+                        <!-- Lista desplegable -->
                         <div x-show="mostrar" @click.outside="mostrar = false"
                              class="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
                             <template x-for="area in opciones" :key="area.id">
-                                <div @click="toggle(area)"
-                                     class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between"
+                                <div @click="toggle(area)" class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between"
                                      :class="seleccionadas.includes(area.id) ? 'bg-gray-50' : ''">
                                     <span x-text="area.nombre"></span>
                                     <template x-if="seleccionadas.includes(area.id)">
@@ -361,12 +368,11 @@
                             </template>
                         </div>
 
-                        <!-- Inputs ocultos -->
                         <div x-ref="hiddenInputs"></div>
                     </div>
                 </div>
 
-                <!-- Otros campos (identificador, código postal, dirección, lat/lng/radio) -->
+                <!-- Otros campos -->
                 <div class="sm:col-span-1">
                     <label class="block text-sm font-medium mb-1">Identificador</label>
                     <input type="text" name="identificador" class="w-full border rounded px-2 py-1 text-sm" x-model="identificador">
@@ -396,14 +402,23 @@
                     <label class="block text-sm font-medium mb-1">Radio</label>
                     <input type="number" name="radio" class="w-full border rounded px-2 py-1 text-sm" x-model="radio">
                 </div>
+
+                <!-- Maps -->
+                <div class="sm:col-span-1">
+                    <label class="block text-sm font-medium mb-1">Maps</label>
+                    <input type="text" name="maps" class="w-full border rounded px-2 py-1 text-sm" x-model="maps" placeholder="https://www.google.com/maps?q=lat,long">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white pt-4">
-                <button type="button" @click="openModal = false; sucursalId = null" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
+                <button type="button" @click="openModal = false" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
                 <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-gray hover:bg-purple-700">Guardar</button>
             </div>
         </form>
     </div>
 </div>
+
+</div>
 @endsection
+
 
