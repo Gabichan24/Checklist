@@ -8,19 +8,27 @@ use App\Models\Sucursal;
 use App\Models\Vacacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class UsuariosController extends Controller
 {
+    /* ============================================================
+       LISTA DE USUARIOS
+    ============================================================ */
     public function index()
     {
-        $usuarios = Usuario::with('perfil')->get();
+        // 🔥 Ahora carga usuarios + perfil + vacaciones
+        $usuarios = Usuario::with(['perfil', 'vacaciones'])->get();
         $perfiles = Perfil::all();
         $sucursales = Sucursal::all();
 
         return view('usuarios.index', compact('usuarios', 'perfiles', 'sucursales'));
     }
 
+    /* ============================================================
+       CREAR USUARIO
+    ============================================================ */
     public function store(Request $request)
     {
         $request->validate([
@@ -60,6 +68,9 @@ class UsuariosController extends Controller
         ]);
     }
 
+    /* ============================================================
+       ACTUALIZAR USUARIO
+    ============================================================ */
     public function update(Request $request, $id)
     {
         $usuario = Usuario::findOrFail($id);
@@ -76,12 +87,15 @@ class UsuariosController extends Controller
             'foto' => 'nullable|image|max:2048'
         ]);
 
+        // Foto
         if ($request->file('foto')) {
-            if ($usuario->foto) Storage::disk('public')->delete($usuario->foto);
-            $fotoPath = $request->file('foto')->store('usuarios', 'public');
-            $usuario->foto = $fotoPath;
+            if ($usuario->foto) {
+                Storage::disk('public')->delete($usuario->foto);
+            }
+            $usuario->foto = $request->file('foto')->store('usuarios', 'public');
         }
 
+        // Datos
         $usuario->update([
             'nombre' => $request->nombre,
             'apellidos' => $request->apellidos,
@@ -101,13 +115,22 @@ class UsuariosController extends Controller
     }
 
 
-    /* ---------------------- VACACIONES ---------------------- */
+    /* ============================================================
+       VACACIONES
+    ============================================================ */
 
+    // Obtener vacaciones de un usuario
     public function vacaciones($id)
     {
-        return response()->json(Vacacion::where('id_usuario', $id)->get());
+        $vacaciones = Vacacion::where('id_usuario', $id)->get();
+
+        return response()->json([
+            'success' => true,
+            'vacaciones' => $vacaciones
+        ]);
     }
 
+    // Guardar vacación nueva
     public function guardarVacacion(Request $request)
     {
         $vacacion = Vacacion::create([
@@ -121,28 +144,58 @@ class UsuariosController extends Controller
         return response()->json(['success' => true, 'id_vacacion' => $vacacion->id_vacacion]);
     }
 
+    // Actualizar vacación
     public function actualizarVacacion(Request $request, $id)
     {
         $vacacion = Vacacion::findOrFail($id);
+
         $vacacion->update([
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin' => $request->fecha_fin,
             'descripcion' => $request->descripcion,
         ]);
+
         return response()->json(['success' => true]);
     }
 
+    // Marcar/Desmarcar finalizada
     public function toggleFinalizada($id)
     {
         $vacacion = Vacacion::findOrFail($id);
+
         $vacacion->finalizada = !$vacacion->finalizada;
         $vacacion->save();
-        return response()->json(['success' => true, 'finalizada' => $vacacion->finalizada]);
-    }
 
+        return response()->json([
+            'success' => true,
+            'finalizada' => $vacacion->finalizada
+        ]);
+    }
+    public function vacacion($id)
+{
+    $hoy = now()->toDateString();
+
+    // Verifica si el usuario está de vacaciones actualmente
+    $vacacionActiva = Vacacion::where('id_usuario', $id)
+        ->where('fecha_inicio', '<=', $hoy)
+        ->where('fecha_fin', '>=', $hoy)
+        ->exists();
+
+    // Obtiene todas las vacaciones (histórico)
+    $vacaciones = Vacacion::where('id_usuario', $id)->get();
+
+    return response()->json([
+        'success' => true,
+        'vacaciones' => $vacaciones,
+        'activo' => !$vacacionActiva  // true = activo, false = inactivo
+    ]);
+}
+
+    // Eliminar vacación
     public function destroyVacacion($id)
     {
         $vacacion = Vacacion::find($id);
+
         if (!$vacacion) {
             return response()->json(['success' => false, 'message' => 'Vacación no encontrada.'], 404);
         }
@@ -153,5 +206,7 @@ class UsuariosController extends Controller
             Log::error('Error eliminando vacación: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error al eliminar.'], 500);
         }
-        }
+
+        return response()->json(['success' => true]);
     }
+}

@@ -1,0 +1,138 @@
+/* --------------------------- */
+/*          GENERAL            */
+/* --------------------------- */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #EAE8FF; /* color morado pastel del fondo */
+    color: #333;
+}
+
+/* Layout dividido */
+.login-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* --------------------------- */
+/*            IZQUIERDA        */
+/* --------------------------- */
+
+.left-side {
+    width: 50%;
+    background: #ffffff;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.left-side img.logo {
+    width: 180px;
+    margin-bottom: 20px;
+}
+
+.left-side .tagline {
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.left-side .tagline strong {
+    font-weight: 700;
+}
+
+/* --------------------------- */
+/*            DERECHA          */
+/* --------------------------- */
+
+.right-side {
+    width: 50%;
+    background: #EAE8FF;
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --------------------------- */
+/*          FORMULARIO         */
+/* --------------------------- */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Campos estilo CheckListo */
+.input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid #C4BAFF;
+    outline: none;
+    transition: 0.2s;
+    background-color: #fff;
+}
+
+.input:focus {
+    border-color: #7B61FF;
+    box-shadow: 0px 0px 5px rgba(122, 86, 255, 0.4);
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+/* --------------------------- */
+/*           BOTÓN             */
+/* --------------------------- */
+
+.btn-login {
+    width: 100%;
+    padding: 16px;
+    background-color: #6418FF;
+    border-radius: 30px;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-login:hover {
+    background-color: #5A12E6;
+}
+
+/* --------------------------- */
+/*      "Olvidé mi contraseña" */
+/* --------------------------- */
+
+.forgot-link {
+    margin-top: 18px;
+    text-align: center;
+}
+
+.forgot-link a {
+    color: #633BFF;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
+}

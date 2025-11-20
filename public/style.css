@@ -1,0 +1,649 @@
+/* =========================================================
+   ESTILOS PRINCIPALES DEL SISTEMA CHECKLIST SIN TAILWIND
+========================================================= */
+
+/* RESET BÁSICO */
+body, h1, h2, h3, ul, li, p {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+}
+
+/* ===========================
+   LAYOUT GENERAL
+=========================== */
+
+.body-app {
+    display: flex;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    height: 100vh;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-title {
+    padding: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 15px;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    text-decoration: none;
+    color: #444;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background: #e8f0ff;
+    color: #2563eb;
+}
+
+.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.sidebar-button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+.navbar {
+    height: 65px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    margin-left: 240px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-right {
+    font-size: 14px;
+    color: #333;
+}
+
+/* ===========================
+   CONTENIDO PRINCIPAL
+=========================== */
+
+.main {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+.main-content {
+    margin: 25px auto;
+    max-width: 1000px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   MODAL DE CONFIGURACIONES (3 columnas estilo Checklisto)
+========================================================= */
+
+/* Estado inicial: OCULTO */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Mostrar modal */
+.modal-visible {
+    display: flex !important;
+}
+
+/* Caja principal del modal */
+.modal-box {
+    width: 900px;
+    background: white;
+    border-radius: 12px;
+    padding: 25px 30px;
+    position: relative;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Botón cerrar */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+.modal-close:hover {
+    opacity: 1;
+}
+
+/* Título */
+.modal-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* CONTENEDOR DE 3 COLUMNAS */
+.modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+/* Secciones */
+.modal-section h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #444;
+}
+
+.modal-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.modal-section ul li {
+    margin-bottom: 8px;
+}
+
+.modal-section a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.modal-section a:hover {
+    text-decoration: underline;
+}
+
+/* Botón grande final */
+.modal-button {
+    display: block;
+    margin-top: 25px;
+    padding: 14px;
+    background: #2563eb;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.modal-button:hover {
+    background: #1e4fc3;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* Contenedor principal */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Encabezado */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.header h2 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+/* Botones */
+.btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    color: #fff;
+    transition: background 0.2s;
+}
+.btn-green { background: #16a34a; }
+.btn-green:hover { background: #15803d; }
+.btn-purple { background: #7c3aed; }
+.btn-purple:hover { background: #6d28d9; }
+.btn-blue { background: #3b82f6; }
+.btn-blue:hover { background: #2563eb; }
+.btn-lightblue { background: #60a5fa; }
+.btn-lightblue:hover { background: #3b82f6; }
+.btn-gray { background: #9ca3af; }
+.btn-gray:hover { background: #6b7280; }
+.btn-yellow { background: #facc15; }
+.btn-yellow:hover { background: #eab308; }
+.btn-cancel { background: #d1d5db; color: #000; }
+.btn-cancel:hover { background: #9ca3af; }
+
+/* Badges */
+.badge-active {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+.badge-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+
+/* Buscador */
+.search-input {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+/* Tabla */
+.table-container { overflow-x: auto; }
+.areas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.areas-table th, .areas-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+.areas-table th { background: #f3f4f6; }
+.no-data { color: #777; }
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 350px;
+    max-width: 90%;
+}
+.modal-box h3 {
+    margin-bottom: 15px;
+}
+.modal-box input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Modo oscuro */
+html.dark .container { background: #1f2937; color: #f3f4f6; }
+html.dark .areas-table th, html.dark .areas-table td { border-color: #374151; }
+html.dark .areas-table th { background: #374151; color: #f3f4f6; }
+html.dark .modal-box { background: #111827; color: #f3f4f6; }
+html.dark .search-input { background: #374151; color: #f3f4f6; border-color: #4b5563; }
+html.dark .btn-cancel { background: #374151; color: #f3f4f6; }
+html.dark .badge-active { background: #064e3b; color: #d1fae5; }
+html.dark .badge-inactive { background: #7f1d1d; color: #fee2e2; }
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: background 0.3s, color 0.3s;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-group, .flex > div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+.form-group label, .flex > div label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+.form-group input, .flex > div input,
+.form-group select, .flex > div select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus, .flex > div input:focus,
+.form-group select:focus, .flex > div select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    background: #fff;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    color: #fff;
+}
+.btn-blue { background: #3b82f6; }
+.btn-blue:hover { background: #2563eb; }
+
+/* Modo oscuro */
+html.dark .container {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+html.dark label, html.dark input, html.dark select {
+    color: #f3f4f6;
+    background: #374151;
+    border-color: #4b5563;
+}
+
+/* -------------------- CONTENEDOR -------------------- */
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+}
+
+/* -------------------- ENCABEZADO -------------------- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.header button {
+    background-color: #7c3aed;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.header button:hover {
+    background-color: #6d28d9;
+}
+
+/* -------------------- ACCIONES -------------------- */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.actions .buttons button {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.actions .buttons button:hover {
+    background-color: #2563eb;
+}
+
+.actions .buttons button:nth-child(2) {
+    background-color: #60a5fa;
+}
+
+.actions .buttons button:nth-child(2):hover {
+    background-color: #3b82f6;
+}
+
+.actions .search input {
+    width: 250px;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.actions .search input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* -------------------- TABLA -------------------- */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+thead tr {
+    background-color: #f3f4f6;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+th, td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e5e7eb;
+}
+
+td {
+    text-align: center;
+}
+
+/* -------------------- ESTATUS -------------------- */
+.status {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status.activo {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+.status.inactivo {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* -------------------- BOTONES TABLA -------------------- */
+.table-btn {
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.table-btn.edit {
+    background-color: #7c3aed;
+    color: #fff;
+}
+
+.table-btn.edit:hover {
+    background-color: #6d28d9;
+}
+
+.table-btn.lock.activo {
+    background-color: #9ca3af;
+    color: #fff;
+}
+
+.table-btn.lock.activo:hover {
+    background-color: #6b7280;
+}
+
+.table-btn.lock.inactivo {
+    background-color: #facc15;
+    color: #fff;
+}
+
+.table-btn.lock.inactivo:hover {
+    background-color: #eab308;
+}
+
+
+
+/* -------------------- FORMULARIOS -------------------- */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* ====== TARJETAS ====== */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.card p {
+    margin: 4px 0;
+    color: #666;
+    font-size: 14px;
+}
