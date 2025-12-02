@@ -587,6 +587,32 @@ tbody tr:hover {
     background-color: #eab308; /* yellow-500 */
 }
 
+/* -------------------- MODALES -------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(241, 237, 237);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    z-index: 50;
+}
+.modal, .modal-permisos {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 24px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgb(245, 240, 240);
+}
+.modal-permisos {
+    max-width: 960px;
+    max-height: 80vh;
+}
+
 
 
 /* -------------------- MODAL PERMISOS -------------------- */

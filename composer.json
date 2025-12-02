@@ -13,6 +13,8 @@
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
         "maatwebsite/excel": "^3.1",
+        "phpoffice/phpspreadsheet": "1.30",
+        "phpoffice/phpword": "^1.4",
         "spatie/laravel-csp": "^3.21",
         "spatie/laravel-permission": "^6.21"
     },

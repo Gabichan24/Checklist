@@ -3,21 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Checklisto</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>Iniciar Sesión - Checklis</title>
+    <style>
+        /* Fuente */
+        body {
+            font-family: sans-serif;
+            background-color: #f3f4f6; /* gris claro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Contenedor principal */
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Logo */
+        .login-container img {
+            width: 96px;
+            height: 96px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+
+        /* Título */
+        .login-container h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1d4ed8; /* azul */
+            margin-bottom: 1.5rem;
+        }
+
+        /* Formulario */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151; /* gris oscuro */
+            margin-bottom: 0.25rem;
+        }
+
+        form input[type="email"],
+        form input[type="password"] {
+            width: 16rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            outline: none;
+            transition: 0.2s;
+            margin-bottom: 1.25rem;
+        }
+
+        form input[type="email"]:focus,
+        form input[type="password"]:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            border: 1px solid #d1d5db;
+        }
+
+        .checkbox-group label {
+            font-size: 0.875rem;
+            color: #4b5563; /* gris */
+            margin: 0;
+        }
+
+        /* Botones y enlaces */
+        .login-container a {
+            font-size: 0.875rem;
+            color: #1d4ed8;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+
+        .login-container button {
+            background-color: #1d4ed8;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            width: 10rem;
+            transition: 0.2s;
+        }
+
+        .login-container button:hover {
+            background-color: #1e40af;
+        }
+
+        /* Mensajes de error */
+        .errors {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+    </style>
 </head>
-<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen">
-    <div class="bg-white p-4 rounded-3xl shadow-xl w-auto max-w-xs mx-auto flex flex-col items-center">
-        
-       <!-- Imagen de la empresa -->
-        
-        <img src="{{ asset('images/GP.png') }}" alt="Logo Grupo Patronis" class="w-24 h-24 mb-4 object-contain">
+<body>
+    <div class="login-container">
+        <!-- Logo -->
+        <img src="{{ asset('images/GP.png') }}" alt="Logo Grupo Patronis">
+
         <!-- Título -->
-        <h1 class="text-2xl font-bold text-primary text-center mb-6">Iniciar Sesión</h1>
+        <h1>Iniciar Sesión</h1>
 
         <!-- Mensajes de error -->
         @if ($errors->any())
-            <div class="mb-4 text-red-600 text-sm text-center">
+            <div class="errors">
                 @foreach ($errors->all() as $error)
                     <p>{{ $error }}</p>
                 @endforeach
@@ -25,36 +152,30 @@
         @endif
 
         <!-- Formulario -->
-        <form method="POST" action="{{ route('login') }}" class="w-full flex flex-col items-center">
+        <form method="POST" action="{{ route('login') }}">
             @csrf
 
             <!-- Correo -->
-            <div class="mb-5 text-center">
-                <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                <input id="correo" type="email" name="correo" value="{{ old('correo') }}" required autofocus autocomplete="username"
-                       class="w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-200 mx-auto block">
+            <div>
+                <label for="correo">Correo Electrónico</label>
+                <input id="correo" type="email" name="correo" value="{{ old('correo') }}" required autofocus autocomplete="username">
             </div>
 
             <!-- Contraseña -->
-            <div class="mb-5 text-center">
-                <label for="contraseña" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <input id="password" type="password" name="password" required autocomplete="current-password"
-       class="w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-200 mx-auto block">
+            <div>
+                <label for="contraseña">Contraseña</label>
+                <input id="password" type="password" name="password" required autocomplete="current-password">
             </div>
 
             <!-- Recordar sesión -->
-            <div class="mb-6 flex items-center justify-center">
-                <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                <label for="remember_me" class="ml-2 text-sm text-gray-600">Recordarme</label>
+            <div class="checkbox-group">
+                <input id="remember_me" type="checkbox" name="remember">
+                <label for="remember_me">Recordarme</label>
             </div>
 
-            <!-- Botones -->
-            <div class="flex flex-col items-center gap-4">
-                <a href="#" class="text-sm text-primary hover:underline text-center">¿Olvidaste tu contraseña?</a>
-                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-40" style="background-color: blue; color: white;">
-    Iniciar Sesión
-</button>
-            </div>
+            <!-- Enlace y botón -->
+            <a href="#">¿Olvidaste tu contraseña?</a>
+            <button type="submit">Iniciar Sesión</button>
         </form>
     </div>
 </body>

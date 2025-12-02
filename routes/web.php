@@ -147,8 +147,52 @@ Route::get('/empresa/configurar', [EmpresaController::class, 'index'])->name('em
 Route::put('/empresa/configurar/{id}', [EmpresaController::class, 'update'])->name('empresa.update');
 //CHECKLIST
 Route::middleware(['auth'])->group(function () {
-    Route::get('/checklist/crear', [ChecklistController::class, 'index'])->name('checklist.index');
+
+    // Crear Checklist
+    Route::get('/checklist/nuevo', [ChecklistController::class, 'index'])->name('checklist.index');
+
     Route::post('/checklist/guardar', [ChecklistController::class, 'store'])->name('checklist.store');
+    Route::post('/checklist/cargar-preguntas', [ChecklistController::class, 'cargarPreguntas'])->name('checklist.cargarPreguntas');
+
+    Route::post('/checklist/guardar-preguntas', [ChecklistController::class, 'guardarPreguntas'])
+        ->name('checklist.guardarPreguntas');
+
+    Route::post('/checklist/store-full', [ChecklistController::class, 'storeFull'])->name('checklist.storeFull');
+    Route::post('/checklist/{id}/update', [ChecklistController::class, 'update'])->name('checklist.update');
+    Route::post('/checklist/{id}/duplicar', [ChecklistController::class, 'duplicar'])->name('checklist.duplicar');
+
+    // Vista de plantillas
+    Route::get('/checklist/mis-plantillas', [ChecklistController::class, 'misPlantillas'])
+        ->name('checklist.misPlantillas');
+    Route::get('/checklist/ver/{id}', [ChecklistController::class, 'verChecklist'])
+    ->name('checklist.ver');
+    Route::get('/checklist/{id}/editar', [ChecklistController::class, 'edit'])->name('checklist.editar');
+
+     // GUARDAR EDICIÓN
+Route::post('/checklist/actualizar/{id}', [ChecklistController::class, 'actualizarChecklist'])
+    ->name('checklist.actualizar');
+
+// ELIMINAR
+Route::delete('/checklist/eliminar/{id}', [ChecklistController::class, 'destroy'])
+    ->name('checklist.eliminar');
+Route::get('/checklist/{id}/duplicar', [ChecklistController::class, 'duplicar'])
+    ->name('checklist.duplicar');
+Route::get('/checklist/{id}/exportar', [ChecklistController::class, 'exportar'])
+    ->name('checklist.exportar');
+
+    // Items / Editar / Eliminar
+    Route::get('/checklist/{id}/items', [ChecklistController::class, 'items'])->name('checklist.items');
+    Route::delete('/checklist/{id}', [ChecklistController::class, 'destroy'])->name('checklist.destroy');
+    Route::get('/checklist/{id}/edit', [ChecklistController::class, 'edit'])->name('checklist.edit');
+    Route::delete('/checklist/item/{id}', [ChecklistController::class, 'eliminarItem'])->name('checklist.item.eliminar');
+    Route::get('/checklist/{id}/editar', [ChecklistController::class, 'editar'])->name('checklist.editar');
+Route::post('/checklist/{id}/guardar', [ChecklistController::class, 'guardar'])->name('checklist.guardar');
+Route::post('/checklist/{id}/cargar-xlsx', [ChecklistController::class, 'cargarXLSX']);
+
+// Aprobar checklist
+Route::put('/checklist/{id}/aprobar', [ChecklistController::class, 'aprobar'])->name('checklist.aprobar');
+Route::post('/checklist/{id}/subir-excel', [ChecklistController::class, 'subirExcel']);
+
 });
 
 

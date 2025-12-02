@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control</title>
+    <title>Grupo patroni's</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- CSS -->
@@ -130,7 +130,10 @@
         <nav class="sidebar-nav">
             <a href="#" class="sidebar-link"><span class="icon">📅</span> <span class="link-text">Programar Tarea</span></a>
             <a href="{{ route('checklist.index') }}" class="sidebar-link"><span class="icon">📝</span> <span class="link-text">Nueva plantilla</span></a>
-            <a href="#" class="sidebar-link"><span class="icon">🖥</span> <span class="link-text">Monitores</span></a>
+            <a href="#" onclick="toggleMonitoresModal()" class="sidebar-link">
+    <span class="icon">🖥</span> 
+    <span class="link-text">Monitores</span>
+</a>
             <a href="#" class="sidebar-link"><span class="icon">⚠️</span> <span class="link-text">Incidencias</span></a>
             <a href="#" class="sidebar-link"><span class="icon">📊</span> <span class="link-text">Reportes</span></a>
         </nav>
@@ -174,13 +177,34 @@
             </div>
         </div>
     </div>
+<!-- MODAL MONITORES -->
+<div id="monitoresModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2>Monitores</h2>
+            <button onclick="toggleMonitoresModal()" class="close-btn">✕</button>
+        </div>
+
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+            <!-- PLANTILLAS -->
+            <a href="{{ route('checklist.misPlantillas') }}" class="modal-button" style="text-align: center;">
+                Plantillas
+            </a>
+
+            <!-- PROGRAMACIONES (NO HACE NADA) -->
+            <button class="modal-button" style="opacity: 0.5; cursor: not-allowed;">
+                Programaciones
+            </button>
+        </div>
+    </div>
+</div>
 
     <!-- CONTENIDO PRINCIPAL -->
     <div class="content-area">
         <header class="header">
             <div class="header-left">
                 <button onclick="toggleSidebar()" class="btn-menu">☰</button>
-                <h1 class="title">@yield('title', 'Dashboard')</h1>
+                
             </div>
             <div class="header-right">
                 <div class="user-info">
@@ -215,7 +239,9 @@
         function toggleConfigModal() {
             document.getElementById('configModal').classList.toggle('hidden');
         }
-
+        function toggleMonitoresModal() {
+        document.getElementById('monitoresModal').classList.toggle('hidden');
+        }
         function darkMode() {
             return {
                 isDark: false,

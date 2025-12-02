@@ -410,14 +410,19 @@ body{font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetic
 <script>
 function usuariosData() {
     return {
-        // Datos
+
+        /* ===========================
+           DATOS
+        ============================ */
         usuarios: @json($usuarios->load('perfil','vacaciones')),
         perfiles: @json($perfiles),
         sucursales: @json($sucursales),
         buscar: '',
         filtroPerfil: '',
 
-        // Modal usuario
+        /* ===========================
+           MODAL USUARIO
+        ============================ */
         modalOpen: false,
         usuarioId: null,
         nombre: '',
@@ -438,7 +443,9 @@ function usuariosData() {
         fotoFile: null,
         id_sucursal: '',
 
-        // Vacaciones
+        /* ===========================
+           VACACIONES
+        ============================ */
         vacaciones: [],
         modalVacaciones: false,
         modalNuevaVacacion: false,
@@ -448,11 +455,12 @@ function usuariosData() {
         editandoVacacionIndex: null,
         vacacionTemp: { inicio:'', fin:'', descripcion:'', id:null },
 
-        // Filtrado en vivo
+        /* ===========================
+           FILTRO EN VIVO
+        ============================ */
         get filtrados() {
             const texto = (this.buscar || '').toLowerCase();
-            // ensure each usuario has _menuOpen state for its dropdown
-            this.usuarios.forEach(u => { if (u._menuOpen === undefined) u._menuOpen = false; this.actualizarEstadoVacaciones(u) });
+
             return this.usuarios.filter(u => {
                 const t = (`${u.nombre} ${u.apellidos} ${u.correo || ''}`).toLowerCase();
                 const matchTexto = texto === '' ? true : t.includes(texto);
@@ -461,7 +469,9 @@ function usuariosData() {
             });
         },
 
-        // Funciones usuario
+        /* ===========================
+           MODALES
+        ============================ */
         resetModal() {
             this.usuarioId = null;
             this.nombre = '';
@@ -516,7 +526,8 @@ function usuariosData() {
         },
 
         guardarUsuario() {
-            if(!this.nombre || !this.apellidos || !this.correo) return alert('Completa los campos requeridos.');
+            if(!this.nombre || !this.apellidos || !this.correo)
+                return alert('Completa los campos requeridos.');
 
             const formData = new FormData();
             formData.append('nombre', this.nombre);
@@ -556,10 +567,7 @@ function usuariosData() {
                     this.modalOpen = false;
                     this.resetModal();
                 } else alert(data.message || 'No se pudo guardar el usuario.');
-            }).catch(err => {
-                console.error(err);
-                alert('Error al guardar usuario (ver consola).');
-            });
+            }).catch(err => console.error(err));
         },
 
         eliminarUsuario(usuario) {
@@ -571,23 +579,30 @@ function usuariosData() {
             })
             .then(res => res.json())
             .then(data => {
-                if(data.success) this.usuarios = this.usuarios.filter(u => u.id_usuario !== usuario.id_usuario);
+                if(data.success)
+                    this.usuarios = this.usuarios.filter(u => u.id_usuario !== usuario.id_usuario);
                 else alert(data.message || 'No se pudo eliminar el usuario.');
             }).catch(err => console.error(err));
         },
 
-        // Vacaciones
+        /* ===========================
+           VACACIONES
+        ============================ */
+
         abrirModalVacaciones(usuario) {
+
             this.usuarioId = usuario.id_usuario;
             this.nombreVacaciones = `${usuario.nombre} ${usuario.apellidos}`;
             this.vacaciones = [];
             this.modalVacaciones = true;
 
-            fetch(`/usuarios/${usuario.id_usuario}/vacaciones`, { method: 'GET', headers: { 'Accept':'application/json' } })
+            fetch(`/usuarios/${usuario.id_usuario}/vacaciones`, {
+                method: 'GET',
+                headers: { 'Accept':'application/json' }
+            })
             .then(res => res.json())
             .then(data => {
                 if(data.success){
-                    // unifica formatos (fecha_inicio / fecha_fin) y mantiene finalizada
                     this.vacaciones = data.vacaciones.map(v => ({
                         id: v.id_vacacion ?? v.id,
                         inicio: v.fecha_inicio ?? v.inicio,
@@ -595,14 +610,14 @@ function usuariosData() {
                         descripcion: v.descripcion ?? v.motivo ?? '',
                         finalizada: v.finalizada ?? false
                     }));
+
                     const u = this.usuarios.find(x => x.id_usuario === this.usuarioId);
                     if(u) {
                         u.vacaciones = [...this.vacaciones];
-                        // recalcula estado SOLO para ese usuario
                         this.actualizarEstadoVacaciones(u);
                     }
-                } else alert(data.message || 'No se pudieron cargar las vacaciones.');
-            }).catch(err => console.error(err));
+                }
+            });
         },
 
         openModalNuevaVacacion() {
@@ -620,120 +635,157 @@ function usuariosData() {
         },
 
         guardarVacacion() {
-            if(!this.vacacionTemp.inicio || !this.vacacionTemp.fin) return alert('Completa inicio y fin.');
+            if(!this.vacacionTemp.inicio || !this.vacacionTemp.fin)
+                return alert('Completa inicio y fin.');
+
             const payload = {
                 id_usuario: this.usuarioId,
                 fecha_inicio: this.vacacionTemp.inicio,
                 fecha_fin: this.vacacionTemp.fin,
                 descripcion: this.vacacionTemp.descripcion
             };
+
             const usuario = this.usuarios.find(u => u.id_usuario === this.usuarioId);
 
-            // Editar
+            // EDITAR
             if(this.editandoVacacion && this.vacacionTemp.id){
                 fetch(`/usuarios/vacaciones/${this.vacacionTemp.id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
+                    headers: {
+                        'Content-Type':'application/json',
+                        'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                        'Accept':'application/json'
+                    },
                     body: JSON.stringify(payload)
                 })
                 .then(res => res.json())
                 .then(data => {
                     if(data.success){
-                        this.vacaciones[this.editandoVacacionIndex] = { ...this.vacaciones[this.editandoVacacionIndex], ...payload };
-                        if(usuario) usuario.vacaciones = [...this.vacaciones];
-                        if(usuario) this.actualizarEstadoVacaciones(usuario);
+                        this.vacaciones[this.editandoVacacionIndex] = {
+                            ...this.vacaciones[this.editandoVacacionIndex],
+                            ...payload
+                        };
+                        if(usuario) {
+                            usuario.vacaciones = [...this.vacaciones];
+                            this.actualizarEstadoVacaciones(usuario);
+                        }
                         this.modalNuevaVacacion = false;
-                    } else alert(data.message || 'No se pudo actualizar.');
-                }).catch(err => console.error(err));
+                    }
+                });
                 return;
             }
 
-            // Crear
+            // CREAR
             fetch('{{ route("usuarios.vacaciones.guardar") }}', {
                 method: 'POST',
-                headers: { 'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' },
+                headers: {
+                    'Content-Type':'application/json',
+                    'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                    'Accept':'application/json'
+                },
                 body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success){
-                    this.vacaciones.unshift({ ...payload, id: data.id ?? Date.now(), finalizada: false });
+                    this.vacaciones.unshift({
+                        ...payload,
+                        id: data.id ?? Date.now(),
+                        finalizada: false
+                    });
                     if(usuario) {
                         usuario.vacaciones = [...this.vacaciones];
                         this.actualizarEstadoVacaciones(usuario);
                     }
                     this.modalNuevaVacacion = false;
-                } else alert(data.message || 'No se pudo guardar.');
-            }).catch(err => console.error(err));
+                }
+            });
         },
 
         toggleFinalizada(v) {
             fetch(`/usuarios/vacaciones/${v.id}/toggle`, {
                 method: 'PATCH',
-                headers: { 'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' }
+                headers: {
+                    'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                    'Accept':'application/json'
+                }
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success){
                     v.finalizada = data.finalizada;
+
                     const usuario = this.usuarios.find(x => x.id_usuario === this.usuarioId);
                     if(usuario){
                         const idx = (usuario.vacaciones || []).findIndex(x => x.id === v.id);
-                        if(idx !== -1) {
+
+                        if(idx !== -1){
                             usuario.vacaciones[idx] = v;
                             this.actualizarEstadoVacaciones(usuario);
                         }
                     }
                 }
-            }).catch(err => console.error(err));
+            });
         },
 
         eliminarVacacion(v) {
             if(!confirm('¿Deseas eliminar esta vacación?')) return;
+
             const id = v.id;
-            if(!id) return;
 
             fetch(`/usuarios/vacaciones/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json' }
+                headers: {
+                    'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                    'Accept':'application/json'
+                }
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success){
                     this.vacaciones = this.vacaciones.filter(x => x.id !== id);
+
                     const usuario = this.usuarios.find(u => u.id_usuario === this.usuarioId);
                     if(usuario){
                         usuario.vacaciones = [...this.vacaciones];
                         this.actualizarEstadoVacaciones(usuario);
                     }
-                } else alert(data.message || 'No se pudo eliminar.');
-            }).catch(err => console.error(err));
+                }
+            });
         },
 
-        // función que determina si el usuario está de vacaciones hoy
+
+        /* ===========================
+           CALCULAR ESTADO: ¿ESTÁ DE VACACIONES HOY?
+        ============================ */
+
         actualizarEstadoVacaciones(usuario){
             try {
                 const hoy = new Date();
+
                 usuario.en_vacaciones = (usuario.vacaciones || []).some(v => {
-                    // soporta ambos formatos: { inicio, fin } o { fecha_inicio, fecha_fin }
+
                     const inicioS = v.inicio ?? v.fecha_inicio;
                     const finS = v.fin ?? v.fecha_fin;
 
                     if(!inicioS || !finS) return false;
 
-                    // Normaliza fechas (evita problemas con zonas horarias)
                     const inicio = new Date(inicioS + 'T00:00:00');
                     const fin = new Date(finS + 'T23:59:59');
 
                     const finalizada = v.finalizada ?? false;
+
                     return inicio <= hoy && hoy <= fin && !finalizada;
                 });
+
             } catch(e) {
                 console.error('Error actualizando estado vacaciones:', e);
                 usuario.en_vacaciones = false;
+            }
         }
-    }
+
     };
 }
 </script>
+
 @endsection

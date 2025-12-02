@@ -34,4 +34,9 @@ class Checklist extends Model
     {
         return $this->belongsTo(Area::class, 'id_area', 'id_area');
     }
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'id_checklist', 'id_checklist');
+    }
+    
 }
